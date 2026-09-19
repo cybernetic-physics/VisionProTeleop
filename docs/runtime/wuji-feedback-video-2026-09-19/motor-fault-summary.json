@@ -1,0 +1,29 @@
+{
+  "frames": 35982,
+  "duration_s": 40,
+  "raw_capture": "/home/g1gen5/Projects/shoot/dredd-recordings/motor-fault-20260919T1840.bin",
+  "sha256": "4643038601aba15354c30bab5dd82666cfe740750fefadf647802338b8e45f27",
+  "nonzero_counts": [
+    {
+      "joint": 16,
+      "code": 512,
+      "frames": 4327
+    }
+  ],
+  "first_fault": {
+    "frame": 15056,
+    "joint_index": 16,
+    "code": 512,
+    "temperature_c": [
+      131,
+      56
+    ],
+    "position_rad": -0.19382166862487793,
+    "velocity_rad_s": 0.015339808538556099,
+    "torque_nm": -21.125
+  },
+  "maximum_left_shoulder_roll_temperature_c": [
+    131,
+    57
+  ]
+}

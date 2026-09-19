@@ -1,0 +1,73 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running unittests src/lib.rs (target/debug/deps/dredd_dds-be6c621f7f78ca6b)
+
+running 12 tests
+test dex3::tests::dex3_state_and_tactile_serialize ... ok
+test inspire::tests::tactile_regions_cover_every_cell_without_padding ... ok
+test raw::tests::offsets_match_native_static_asserts ... ok
+test raw::tests::bms_serializes_abi_v2_keys ... ok
+test dex3::tests::hand_state_full_serializes_all_keys ... ok
+test packing::tests::crc_matches_frozen_upstream_vector ... ok
+test tests::interface_validation_matches_shim ... ok
+test replay::tests::payload_size_is_fixed ... ok
+test tests::writer_guard_blocks_non_lo_without_token ... ok
+test replay::tests::frame_roundtrips_through_writer_and_reader ... ok
+test raw::tests::snapshot_serializes_abi_v2_keys ... ok
+test packing::tests::packs_exact_unitree_layout_and_disables_tail ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/dex3_lo.rs (target/debug/deps/dex3_lo-75e1a9c734faff24)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/inspire_lo.rs (target/debug/deps/inspire_lo-e57714f7f9037429)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/live_state.rs (target/debug/deps/live_state-c76aa98bbfa8ab34)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/lowcmd_lo.rs (target/debug/deps/lowcmd_lo-90f3dda3d9e0e2a4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/reader_leak_control_close_does_call_close.rs (target/debug/deps/reader_leak_control_close_does_call_close-7dcdef6936459638)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/reader_leak_never_calls_close.rs (target/debug/deps/reader_leak_never_calls_close-64ff63b33618bc5a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/state_no_data.rs (target/debug/deps/state_no_data-ccfb9e261e83f20a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/state_roundtrip.rs (target/debug/deps/state_roundtrip-d525b1f7d92828fc)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests dredd_dds
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

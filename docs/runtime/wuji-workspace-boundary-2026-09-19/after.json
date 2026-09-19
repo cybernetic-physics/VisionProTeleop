@@ -1,0 +1,25 @@
+[
+  {
+    "recording": "bridge-20260919T173446Z-30483988",
+    "source_fault": "left palm target is too close to or behind the shoulder plane; keep hands in front and recapture the workspace",
+    "samples_available": 125,
+    "samples_replayed": 125,
+    "fault": null,
+    "peak_joint_error_rad": 0.46321493951411497,
+    "peak_velocity_rad_s": 9.119995683431618,
+    "peak_acceleration_rad_s2": 455.9997841715809,
+    "peak_step_ms": 3.0408350003199303,
+    "final_palm_errors": {
+      "left": {
+        "position_error_m": 0.057391348914310136,
+        "orientation_error_deg": 17.10443137539152
+      },
+      "right": {
+        "position_error_m": 0.035791130417483726,
+        "orientation_error_deg": 21.90750701615448
+      }
+    },
+    "legacy_samples_assumed_fresh": 0,
+    "validation_scope": "offline command generation against recorded feedback; no motor output"
+  }
+]

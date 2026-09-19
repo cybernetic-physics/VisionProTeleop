@@ -19,7 +19,7 @@ class KeychainManager {
     private let service = "VisionProTeleop.CloudStorage"
     
     /// Shared keychain access group for cross-app sync (Team ID + group identifier)
-    private let accessGroup = "ATTMC2WVK2.com.younghyopark.VisionProTeleop.shared"
+    private let accessGroup = "C2866US93S.com.lucchartier.VisionProTeleop.shared"
     
     // MARK: - Keys
     

@@ -1,0 +1,43 @@
+{
+  "recording": "bridge-20260919T173446Z-30483988",
+  "fault": null,
+  "replayed": 125,
+  "available": 125,
+  "boundary_step": {
+    "time": 6510.565643004,
+    "states": {
+      "left": "live",
+      "right": "live"
+    },
+    "command": [
+      0.25415780539397514,
+      -0.2416397949466163,
+      0.2884449659646165,
+      -8.390291593194918e-17,
+      0.21632542378694786,
+      -1.5979009328244604,
+      -0.2573774000414227,
+      -0.23073397041905325,
+      0.13421026317650872,
+      -0.665053324782504,
+      1.2452459548556233e-17,
+      -0.39736594945165954,
+      -1.5568345048097938,
+      0.16786873824062978
+    ],
+    "max_command_delta": 0.004963926470594432,
+    "max_ik_velocity": 0.24860618812875931,
+    "max_ik_velocity_change": 0.030016131658458373,
+    "boundary": {
+      "left": {
+        "limited": true,
+        "correction_m": 0.00013274408703276008
+      },
+      "right": {
+        "limited": false,
+        "correction_m": 0.0
+      }
+    }
+  },
+  "note": "Recorded-feedback command-generation replay, not live controller dynamics. Overall finite-difference peaks include existing initial forward-hold projection; boundary step shown separately."
+}

@@ -1,0 +1,4 @@
+Direct-arm trace: /home/g1gen5/Projects/shoot/dredd-recordings/direct-arm-1789842460-130822.jsonl
+Direct arm profile Urdf: speeds [37.0, 37.0, 37.0, 37.0, 37.0, 22.0, 22.0, 37.0, 37.0, 37.0, 37.0, 37.0, 22.0, 22.0] rad/s, acceleration 30 rad/s², response 499.99997/s; velocity feedforward capped at 6 rad/s
+READ-ONLY DIRECT PREVIEW: no writer, no controller release, no motor output. Feedback available immediately.
+Direct trace dropped samples: 0

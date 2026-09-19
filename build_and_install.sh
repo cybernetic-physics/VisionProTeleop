@@ -18,7 +18,7 @@
 #   - For simulator: visionOS Simulator available
 #
 
-set -e  # Exit on error
+set -eo pipefail  # Preserve xcodebuild failures through the output-formatting pipeline
 
 # =============================================================================
 # Configuration
@@ -28,7 +28,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$SCRIPT_DIR"
 PROJECT_NAME="Tracking Streamer"
 SCHEME="VisionProTeleop"
-BUNDLE_ID="improbable.younghyo.DexTeleop2"
+BUNDLE_ID="com.lucchartier.VisionProTeleop"
 
 # Use a persistent build directory outside iCloud Drive for incremental builds
 # This avoids iCloud extended attributes AND preserves build cache between runs

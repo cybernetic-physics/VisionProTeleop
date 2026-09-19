@@ -6,7 +6,6 @@
     <string>Connect to Surreal Touch controllers to stream their positions and individual buttons.</string>
     <key>NSBluetoothPeripheralUsageDescription</key>
     <string>Read Surreal Touch controller tracking and button input.</string>
-	<!-- Google OAuth URL Scheme for ASWebAuthenticationSession callback -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -18,13 +17,6 @@
 			</array>
 		</dict>
 	</array>
-	
-	<key>NSCameraUsageDescription</key>
-	<string>VisionProTeleop needs camera access to display video from connected USB cameras (UVC devices).</string>
-	
-	<!-- Accessory Tracking (visionOS 26.0+) -->
-	<key>NSAccessoryTrackingUsageDescription</key>
-	<string>VisionProTeleop uses accessory tracking to stream spatial controller poses for teleoperation.</string>
 	<key>GCSupportedGameControllers</key>
 	<array>
 		<dict>
@@ -39,20 +31,16 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>UIApplicationSceneManifest</key>
-	<dict>
-		<key>UIApplicationPreferredDefaultSceneSessionRole</key>
-		<string>UIWindowSceneSessionRoleApplication</string>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<true/>
-		<key>UISceneConfigurations</key>
-		<dict/>
-	</dict>
-	
-	<!-- Make iCloud container visible in Finder -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Connect to your robot over Wi-Fi to receive live camera video and send tracking data.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_vp-calibrate._tcp</string>
+		<string>_vp-calibrate._udp</string>
+	</array>
 	<key>NSUbiquitousContainers</key>
 	<dict>
-		<key>iCloud.com.younghyopark.VisionProTeleop</key>
+		<key>iCloud.com.lucchartier.VisionProTeleop</key>
 		<dict>
 			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
 			<true/>
@@ -62,20 +50,16 @@
 			<string>Any</string>
 		</dict>
 	</dict>
-	
-	<!-- Also enable local Documents folder sharing (backup option) -->
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationPreferredDefaultSceneSessionRole</key>
+		<string>UIWindowSceneSessionRoleApplication</string>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict/>
+	</dict>
 	<key>UIFileSharingEnabled</key>
 	<true/>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
-	
-	<!-- Multipeer Connectivity / Bonjour Services -->
-	<key>NSBonjourServices</key>
-	<array>
-		<string>_vp-calibrate._tcp</string>
-		<string>_vp-calibrate._udp</string>
-	</array>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Connect to your robot over Wi-Fi to receive live camera video and send tracking data.</string>
 </dict>
 </plist>

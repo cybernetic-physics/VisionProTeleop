@@ -1,0 +1,32 @@
+[
+  {
+    "recording": "bridge-20260919T184023Z-a7dad375",
+    "old_plane_guard_would_trip": 1,
+    "samples": 17,
+    "replayed": 17,
+    "holds": 0,
+    "fault": null,
+    "peak_command_delta": 0.01200000000000001,
+    "maximum_feedback_projection_rad": 0.0
+  },
+  {
+    "recording": "bridge-20260919T184053Z-1ce146fe",
+    "old_plane_guard_would_trip": 1,
+    "samples": 17,
+    "replayed": 17,
+    "holds": 0,
+    "fault": null,
+    "peak_command_delta": 0.0009964558289766723,
+    "maximum_feedback_projection_rad": 0.0
+  },
+  {
+    "recording": "bridge-20260919T184608Z-cce3c064",
+    "old_plane_guard_would_trip": 0,
+    "samples": 1281,
+    "replayed": 1281,
+    "holds": 0,
+    "fault": null,
+    "peak_command_delta": 0.08150363504212216,
+    "maximum_feedback_projection_rad": 0.010056173124877832
+  }
+]

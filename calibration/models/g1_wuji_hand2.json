@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "purpose": "kinematic_collision_preview",
+  "hardware_validated": false,
+  "mount_gap_m": 0.005,
+  "mount_confirmation": "user: axial gap, original Dex palm orientation",
+  "body_clearance_m": 0.0254,
+  "hand_to_hand_clearance_m": 0.0,
+  "mounts": {
+    "left": {
+      "parent": "left_wrist_yaw_link",
+      "translation_m": [
+        0.0465,
+        0.003,
+        0.0
+      ],
+      "quaternion_wxyz": [
+        0.5,
+        -0.5,
+        0.5,
+        -0.5
+      ],
+      "exempt_attachment": [
+        "left_wrist_yaw_link",
+        "left_palm_link"
+      ]
+    },
+    "right": {
+      "parent": "right_wrist_yaw_link",
+      "translation_m": [
+        0.0465,
+        -0.003,
+        0.0
+      ],
+      "quaternion_wxyz": [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "exempt_attachment": [
+        "right_wrist_yaw_link",
+        "right_palm_link"
+      ]
+    }
+  },
+  "limitations": [
+    "Wrist inertia still includes source Dex mass; do not use for inverse dynamics.",
+    "Confirm camera, pelvis cover and adapter geometry against hardware.",
+    "Generated geometry does not itself enforce final motor commands."
+  ]
+}

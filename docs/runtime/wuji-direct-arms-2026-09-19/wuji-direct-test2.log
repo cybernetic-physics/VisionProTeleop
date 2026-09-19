@@ -1,0 +1,53 @@
+warning: method `set_inspire` is never used
+  --> crates/dredd-runtime/src/shared.rs:75:19
+   |
+74 | impl HandMeasured {
+   | ----------------- method in this implementation
+75 |     pub(crate) fn set_inspire(&mut self, side: usize, state: dredd_dds::inspire::InspireState) {
+   |                   ^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `dredd-runtime` (lib) generated 1 warning
+   Compiling dredd v0.1.0 (/home/g1gen5/Projects/dredd-teach-mode-adam/services/g1-dredd/crates/dredd)
+warning: method `gain` is never used
+   --> crates/dredd/src/arm_direct.rs:122:8
+    |
+ 79 | impl Controller {
+    | --------------- method in this implementation
+...
+122 |     fn gain(&self, now: u64) -> f32 { ((now.saturating_sub(self.started) as f64 / ACQUIRE_NS as f64) as f32).clamp(0.,1.) }
+    |        ^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: constant `RETURN_SETTLE_MAX_DURATION_NS` is never used
+   --> crates/dredd/src/teach_common.rs:234:11
+    |
+234 | pub const RETURN_SETTLE_MAX_DURATION_NS: u64 = 3_000_000_000;
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `STATE_ABSENT_NS` is never used
+   --> crates/dredd/src/teach_common.rs:263:11
+    |
+263 | pub const STATE_ABSENT_NS: u64 = 100_000_000;
+    |           ^^^^^^^^^^^^^^^
+
+warning: `dredd` (bin "dredd" test) generated 3 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.98s
+     Running unittests src/main.rs (target/debug/deps/dredd-c6943c3eb26129a6)
+
+running 10 tests
+test arm_direct::tests::release_and_following_error_latch ... ok
+test arm_direct::tests::acquisition_and_first_target_are_continuous ... ok
+test arm_direct::tests::no_body_pose_or_feedforward_at_any_gain_or_release ... ok
+test arm_direct::tests::replay_future_and_expired_packets_latch ... ok
+test arm_direct::tests::timeout_latches_and_later_commands_cannot_resume ... ok
+test arm_direct::tests::malformed_and_out_of_range_commands_rejected ... ok
+test arm_direct::tests::cli_needs_explicit_motor_and_support_flags ... ok
+test arm_direct::tests::replay_recorded_steady_tracking_preserves_limits ... ok
+test arm_direct::tests::trajectory_limits_and_small_motion_settling ... ok
+test arm_direct::tests::physical_boundary_approach_remains_bounded ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 185 filtered out; finished in 0.02s
+

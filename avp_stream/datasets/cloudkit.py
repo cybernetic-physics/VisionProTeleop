@@ -18,7 +18,7 @@ from .models import PublicRecording
 
 
 # CloudKit configuration
-_CONTAINER_ID = "iCloud.com.younghyopark.VisionProTeleop"
+_CONTAINER_ID = "iCloud.com.lucchartier.VisionProTeleop"
 _RECORD_TYPE = "newpublicRecording"
 
 # API Tokens for different environments

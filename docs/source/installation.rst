@@ -4,35 +4,30 @@ Installation
 Python Package
 --------------
 
-The easiest way to install the VisionProTeleop Python package is via pip:
+Install the SDK from this fork to obtain the dedicated controller channels:
 
 .. code-block:: bash
 
-   pip install --upgrade avp_stream
+   git clone https://github.com/cybernetic-physics/VisionProTeleop.git
+   cd VisionProTeleop
+   python3 -m venv .venv
+   source .venv/bin/activate
+   python -m pip install -e .
 
+The version is 2.52.0 in this source tree. This does not imply that this fork has
+been published to PyPI.
 
 Vision Pro App
 --------------
 
-App Store Installation
-^^^^^^^^^^^^^^^^^^^^^^^
+Open ``Tracking Streamer.xcodeproj``, configure your team and signing capabilities,
+select the **VisionProTeleop** scheme and a physical Vision Pro, then press Run.
+Wireless Xcode pairing is supported; a Developer Strap is optional.
 
-The official way to install the app is through the VisionOS App Store:
-
-1. Open the App Store on your Vision Pro
-2. Search for **Tracking Streamer**
-3. Download and install the app
-
-Manual Installation (Development)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If you want to build and install the app yourself for development purposes, you need: 
-
-- Apple Developer Account
-- Vision Pro Developer Strap
-- Mac with Xcode installed
-
-See `here <https://github.com/Improbable-AI/VisionProTeleop/blob/main/how_to_install.md>`_ for detailed instructions on building and installing the app manually.
+Follow the `full device installation guide <https://github.com/cybernetic-physics/VisionProTeleop/blob/main/docs/how_to_install.md>`_
+for Developer Mode, provisioning, controller pairing, and the Python diagnostic.
+The upstream App Store app is a separate distribution and does not install this
+fork’s Surreal Touch integration. See :doc:`surreal_touch` for the data API.
 
 Network Setup
 --------------

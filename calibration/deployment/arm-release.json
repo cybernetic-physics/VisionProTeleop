@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-09-19T12:43:17.533059+00:00",
+  "source": {
+    "sharewear": {
+      "path": "/home/g1gen5/Projects/shoot/sharewear",
+      "commit": "72ba6fcf4ece3029c4199080016da19a6de56b61",
+      "branch": "codex/sharewear-input"
+    },
+    "HumDex": {
+      "path": "/home/g1gen5/Projects/shoot/HumDex",
+      "commit": "caa70397532d2b5b21a296ba14f3b2d2d3ae4301",
+      "branch": "codex/sharewear-input"
+    },
+    "Humanoid-Teleop": {
+      "path": "/home/g1gen5/Projects/shoot/Humanoid-Teleop",
+      "commit": "efd7157ba7f6b5d34c7d796a2a893a04286a300a",
+      "branch": "codex/sharewear-input"
+    },
+    "GR00T-WholeBodyControl": {
+      "path": "/home/g1gen5/Projects/shoot/GR00T-WholeBodyControl",
+      "commit": "cfeabcbb547269b6ae1310f371074f388f94bb9a",
+      "branch": "codex/sharewear-input"
+    },
+    "dredd-teach-mode-adam": {
+      "path": "/home/g1gen5/Projects/dredd-teach-mode-adam",
+      "commit": "4e108c5b329a9edc7d6bacd9cc1f68a2687f54a6",
+      "branch": "teach-mode"
+    }
+  },
+  "hardware_activated": false,
+  "motor_commands_sent": 0,
+  "tests": {
+    "sharewear": 86,
+    "humanoid_teleop": 22,
+    "dredd_runtime": 143,
+    "sonic_release": 1
+  },
+  "normal_arm_release_seconds": 10,
+  "passive_damping_retained": true,
+  "zero_total_torque_guaranteed": false,
+  "protected_startup_deployed": false,
+  "final_writer_collision_guard_deployed": false,
+  "mount": {
+    "axial_gap_m": 0.005,
+    "same_dex_palm_orientation": true,
+    "coordinates": 69,
+    "hardware_validated": false
+  },
+  "binaries": {
+    "sonic": {
+      "path": "/home/g1gen5/Projects/shoot/GR00T-WholeBodyControl/gear_sonic_deploy/target/release/g1_deploy_onnx_ref",
+      "sha256": "094aaaba01870bb94b721289e10649f444ee7ca339ae7ceca541dc770ddd64bf",
+      "dynamic_dependencies_resolved": true
+    },
+    "dredd": {
+      "path": "/home/g1gen5/Projects/dredd-teach-mode-adam/services/g1-dredd/target/release/dredd",
+      "sha256": "64f0913b2569f5d5b7c2f012a30d382fdf764bd7bb66800f24d9a61020dc0a28",
+      "dynamic_dependencies_resolved": true
+    }
+  }
+}

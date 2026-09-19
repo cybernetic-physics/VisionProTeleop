@@ -1,0 +1,19 @@
+{
+  "source_recording": "bridge-20260919T174322Z-9159c497",
+  "capture_time_mono": 7018.476585472,
+  "old_result": "right arm outside forward manipulation posture: elbow=-0.3213 rad exceeds 0.30-rad capture guard",
+  "new_result": "capture accepted",
+  "initial_reference_delta_rad": 0.0,
+  "right_measured_elbow_rad": -0.321321040391922,
+  "command_posture_bounds": {
+    "left": {
+      "shoulder_max": 0.8,
+      "elbow_min": -0.22446635663509368
+    },
+    "right": {
+      "shoulder_max": 0.8,
+      "elbow_min": -0.371321040391922
+    }
+  },
+  "validation_scope": "original recorded capture frame and encoder state; no transports or motor output"
+}

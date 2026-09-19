@@ -1,0 +1,9 @@
+{
+  "fresh_companion_feedback_samples": 249,
+  "arm_packets": 0,
+  "motor_frames": 0,
+  "native_trace_samples": 400,
+  "motion_profile": "urdf",
+  "headset_transport": "Reconnecting: UNAVAILABLE: failed to connect to all addresses; last error: UNKNOWN: ipv4:192.168.50.236:12345: Failed to connect to remote host: Connection refused",
+  "stop_reason": "duration_elapsed"
+}

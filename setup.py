@@ -2,11 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='avp_stream',
-    version='2.50',
+    version='2.52.0',
     description='This python package streams diverse tracking data available from AVP to any devices that can communicate with gRPC.',
     author='Younghyo Park',
     author_email='younghyo@mit.edu',
     packages=find_packages(),
+    package_data={"avp_stream.grpc_msg": ["*.proto"]},
     install_requires=[
         'numpy', 'grpcio', 'grpcio-tools', 'protobuf>=5.29.0', 'matplotlib', 'opencv-python',
         'aiortc', 'av', 'requests', 'pyyaml', 'mujoco', 'tqdm', 'scipy', 'pydub',

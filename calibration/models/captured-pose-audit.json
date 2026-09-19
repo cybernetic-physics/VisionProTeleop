@@ -1,0 +1,152 @@
+{
+  "purpose": "offline audit only",
+  "finger_pose": "model zero, clamped to joint limits; no live feedback",
+  "body_pose": "legs and waist zero for analysis only",
+  "collisions": [
+    {
+      "a": "left_wrist_roll_link",
+      "b": "left_wrist_yaw_link",
+      "distance_m": 0.008347572938109216,
+      "required_m": 0.0254,
+      "deficit_m": 0.017052427061890783
+    },
+    {
+      "a": "torso_link",
+      "b": "left_shoulder_yaw_link",
+      "distance_m": 0.008826047672941886,
+      "required_m": 0.0254,
+      "deficit_m": 0.016573952327058113
+    },
+    {
+      "a": "left_wrist_pitch_link",
+      "b": "left_palm_link",
+      "distance_m": 0.008999988631556401,
+      "required_m": 0.0254,
+      "deficit_m": 0.016400011368443598
+    },
+    {
+      "a": "right_wrist_pitch_link",
+      "b": "right_palm_link",
+      "distance_m": 0.008999989183688951,
+      "required_m": 0.0254,
+      "deficit_m": 0.016400010816311046
+    },
+    {
+      "a": "right_elbow_link",
+      "b": "right_wrist_pitch_link",
+      "distance_m": 0.009500357171620686,
+      "required_m": 0.0254,
+      "deficit_m": 0.015899642828379315
+    },
+    {
+      "a": "left_elbow_link",
+      "b": "left_wrist_pitch_link",
+      "distance_m": 0.009501878147811635,
+      "required_m": 0.0254,
+      "deficit_m": 0.015898121852188363
+    },
+    {
+      "a": "torso_link",
+      "b": "left_shoulder_roll_link",
+      "distance_m": 0.009940541555406095,
+      "required_m": 0.0254,
+      "deficit_m": 0.015459458444593904
+    },
+    {
+      "a": "right_wrist_roll_link",
+      "b": "right_wrist_yaw_link",
+      "distance_m": 0.010015900317383022,
+      "required_m": 0.0254,
+      "deficit_m": 0.015384099682616977
+    },
+    {
+      "a": "torso_link",
+      "b": "right_shoulder_roll_link",
+      "distance_m": 0.011721173964273891,
+      "required_m": 0.0254,
+      "deficit_m": 0.013678826035726108
+    },
+    {
+      "a": "torso_link",
+      "b": "right_shoulder_yaw_link",
+      "distance_m": 0.014552510179884416,
+      "required_m": 0.0254,
+      "deficit_m": 0.010847489820115583
+    },
+    {
+      "a": "right_palm_link",
+      "b": "right_finger5_link2",
+      "distance_m": -0.004444134202866962,
+      "required_m": 0.0,
+      "deficit_m": 0.004444134202866962
+    },
+    {
+      "a": "left_palm_link",
+      "b": "left_finger5_link2",
+      "distance_m": -0.004444098401491962,
+      "required_m": 0.0,
+      "deficit_m": 0.004444098401491962
+    },
+    {
+      "a": "left_palm_link",
+      "b": "left_finger4_link2",
+      "distance_m": -0.0035347151406856987,
+      "required_m": 0.0,
+      "deficit_m": 0.0035347151406856987
+    },
+    {
+      "a": "right_palm_link",
+      "b": "right_finger4_link2",
+      "distance_m": -0.0035345896873204153,
+      "required_m": 0.0,
+      "deficit_m": 0.0035345896873204153
+    },
+    {
+      "a": "right_palm_link",
+      "b": "right_finger3_link2",
+      "distance_m": -0.0021666733848977,
+      "required_m": 0.0,
+      "deficit_m": 0.0021666733848977
+    },
+    {
+      "a": "left_palm_link",
+      "b": "left_finger3_link2",
+      "distance_m": -0.0021656561865500672,
+      "required_m": 0.0,
+      "deficit_m": 0.0021656561865500672
+    },
+    {
+      "a": "right_palm_link",
+      "b": "right_finger2_link2",
+      "distance_m": -0.0018410524026972947,
+      "required_m": 0.0,
+      "deficit_m": 0.0018410524026972947
+    },
+    {
+      "a": "left_palm_link",
+      "b": "left_finger2_link2",
+      "distance_m": -0.0018410255684959817,
+      "required_m": 0.0,
+      "deficit_m": 0.0018410255684959817
+    },
+    {
+      "a": "left_elbow_link",
+      "b": "left_wrist_yaw_link",
+      "distance_m": 0.024593809744919794,
+      "required_m": 0.0254,
+      "deficit_m": 0.0008061902550802053
+    }
+  ],
+  "mounts": {
+    "left": [
+      0.20525675922813577,
+      0.17509167109153892,
+      0.9822607935222314
+    ],
+    "right": [
+      0.1825002148317074,
+      -0.22357777208628082,
+      1.0093979107264421
+    ]
+  }
+}

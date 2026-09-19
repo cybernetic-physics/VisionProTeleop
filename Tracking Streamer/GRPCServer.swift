@@ -121,7 +121,10 @@ struct HandTrackingServiceImpl: Handtracking_HandTrackingService.SimpleServicePr
                 if versionCode > 0 {
                     DataManager.shared.pythonLibraryVersionCode = versionCode
                 }
-                let hadConnection = DataManager.shared.webrtcServerInfo != nil
+                let previousInfo = DataManager.shared.webrtcServerInfo
+                let hadConnection = previousInfo != nil
+                let sameEndpoint = previousInfo?.host == host && previousInfo?.port == port
+                let preserveHealthyPeer = sameEndpoint && DataManager.shared.webRTCPeerConnected
                 DataManager.shared.webrtcServerInfo = (host: host, port: port)
                 DataManager.shared.stereoEnabled = stereoVideo
                 DataManager.shared.stereoAudioEnabled = stereoAudio
@@ -130,7 +133,7 @@ struct HandTrackingServiceImpl: Handtracking_HandTrackingService.SimpleServicePr
                 DataManager.shared.simEnabled = simEnabled
                 if DataManager.shared.webrtcGeneration < 0 || !hadConnection {
                     DataManager.shared.webrtcGeneration = 1
-                } else {
+                } else if !preserveHealthyPeer {
                     DataManager.shared.webrtcGeneration += 1
                 }  
                 dlog("🔄 [DEBUG] Set WebRTC generation to \(DataManager.shared.webrtcGeneration)")

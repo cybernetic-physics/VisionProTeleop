@@ -1,4 +1,5 @@
 import grpc
+from avp_stream.controllers import decode_controllers, empty_controllers, controller_snapshot, rigid_transform
 from avp_stream.grpc_msg import * 
 from threading import Thread, Lock, Condition
 from avp_stream.utils.grpc_utils import * 
@@ -65,8 +66,8 @@ except ValueError:
 # Version is encoded as: major * 10000 + minor * 100 + patch
 # Example: 2.2.2 -> 20202, 3.0.0 -> 30000
 # This allows visionOS to compare versions and enforce minimum requirements
-LIBRARY_VERSION = "2.50.0"
-LIBRARY_VERSION_CODE = 25000  # 2*10000 + 50*100 + 0
+LIBRARY_VERSION = "2.52.0"
+LIBRARY_VERSION_CODE = 25200  # 2*10000 + 52*100 + 0
 
 YUP2ZUP = np.array([[[1, 0, 0, 0], 
                     [0, 0, -1, 0], 
@@ -355,10 +356,17 @@ class TrackingData:
     # Backward compatible dict-style API
     # -------------------------------------------------------------------------
     
+    @property
+    def controllers(self) -> Dict[str, Any]:
+        """Independent left/right controller poses and inputs; stale live samples expire."""
+        return controller_snapshot(self._raw.get("controllers") if self._raw else None)
+
     def __getitem__(self, key: str) -> Any:
         """Dict-style access for backward compatibility."""
         if self._raw is None:
             raise KeyError(key)
+        if key == "controllers":
+            return self.controllers
         if key not in self._raw:
             raise KeyError(key)
         return self._raw[key]
@@ -371,7 +379,7 @@ class TrackingData:
         """Dict-style get() method."""
         if self._raw is None:
             return default
-        return self._raw.get(key, default)
+        return self.controllers if key == "controllers" else self._raw.get(key, default)
     
     def keys(self):
         """Return dict keys."""
@@ -987,6 +995,9 @@ class VisionProStreamer:
         # Stylus tracking state
         self._stylus_data: Optional[Dict[str, Any]] = None  # Full stylus data dict
         self._stylus_lock = Lock()
+        self._controller_lock = Lock()
+        self._controller_origin = np.eye(4)
+        self._controller_data = empty_controllers()
         
         self._ice_servers = None  # Initialize ICE servers (populated in cross-network mode)
         self._relay_only = relay_only  # Force TURN relay only (for testing)
@@ -1062,6 +1073,33 @@ class VisionProStreamer:
             # Prefer WebRTC data once channel is active.
             return
 
+        # Controllers have their own protobuf fields and do not require a hand skeleton.
+        with self._controller_lock:
+            previous = self._controller_data
+            controllers = decode_controllers(
+                hand_update.controllers if hand_update.HasField("controllers") else None,
+                axis_transform=self.axis_transform,
+                stream_from_avp=np.linalg.inv(self._attach_to_mat) if self.origin == "sim" else None,
+                world_from_surreal=self._controller_origin,
+            )
+            if (controllers["supported"] and previous["supported"]
+                    and (controllers["timestamp_ns"], controllers["sequence"]) ==
+                        (previous["timestamp_ns"], previous["sequence"])):
+                controllers["received_at_monotonic"] = previous["received_at_monotonic"]
+            self._controller_data = controllers
+        transformations = {"controllers": controllers}
+        if (len(hand_update.left_hand.skeleton.jointMatrices) < 25
+                or len(hand_update.right_hand.skeleton.jointMatrices) < 25):
+            # Controller-only producers can omit both hands entirely.
+            if hand_update.HasField("Head"):
+                head = rotate_head(self.axis_transform @ process_matrix(hand_update.Head))
+                transformations["head"] = np.linalg.inv(self._attach_to_mat)[np.newaxis] @ head if self.origin == "sim" else head
+            with self._latest_lock:
+                if self.record:
+                    self.recording.append(transformations)
+                self.latest = transformations
+            return
+
         try:
             # Base transforms in AVP coordinate frame
             left_wrist = self.axis_transform @ process_matrix(hand_update.left_hand.wristMatrix)
@@ -1095,6 +1133,7 @@ class VisionProStreamer:
                 right_fingers_compat = right_fingers_full
             
             transformations = {
+                "controllers": controllers,
                 "left_wrist": left_wrist,
                 "right_wrist": right_wrist,
                 "left_fingers": left_fingers_compat,  # (25, 4, 4) always for backward compat
@@ -1254,7 +1293,7 @@ class VisionProStreamer:
                         self._stylus_data = None
         except Exception as exc:
             self._log(f"[HAND-TRACKING] Failed to process hand update from {source}: {exc}", force=True)
-            return
+            transformations = {"controllers": controllers}
 
         with self._latest_lock:
             if self.record:
@@ -2294,6 +2333,43 @@ class VisionProStreamer:
         with self._markers_lock:
             return dict(self._tracked_images)
     
+    def get_controllers(self, max_age_ms: float = 250) -> Dict[str, Any]:
+        """Get independent controller poses, buttons and analog axes.
+
+        Returns metadata plus ``left`` and ``right`` dictionaries. ``pose_head``
+        is a 4x4 transform in raw headset axes (meters, X right, Y up, -Z forward).
+        ``pose`` follows the configured stream origin/axes. Unavailable poses and
+        inputs are None. ``active`` reports runtime action activity, not Bluetooth
+        connectivity. Stalls expire both poses and held buttons after max_age_ms.
+        """
+        if self._cross_network_mode and not self._webrtc_connected:
+            self._ensure_cross_network_connected()
+        with self._controller_lock:
+            return controller_snapshot(self._controller_data, max_age_ms)
+
+    def get_gloves(self, max_age_ms: float = 250) -> Dict[str, Any]:
+        """Wuji skeletons fused with controller wrist poses, separate from optical hands.
+
+        joints_avp: 21x3 in raw ARKit world; joints_head: head axes at capture time;
+        joints: configured stream axes/origin. Invalid or stale samples have no joints.
+        Calibration preview metadata is in get_controllers()["calibration"].
+        """
+        return self.get_controllers(max_age_ms)["gloves"]
+
+    def set_controller_origin(self, world_from_surreal) -> None:
+        """Set a measured rigid transform from Surreal LOCAL to raw ARKit world.
+
+        Leave identity when using the headset's manual calibration. On packets
+        with native calibration this is an ADDITIONAL world correction, applied
+        after the saved world and grip offsets. For older packets it maps raw
+        LOCAL into ARKit world. Hands, head and buttons are unaffected.
+        The next received controller sample uses the new transform.
+        """
+        transform = rigid_transform(world_from_surreal)
+        with self._controller_lock:
+            self._controller_origin = transform
+            self._controller_data = empty_controllers()
+
     def get_stylus(self) -> Optional[Dict[str, Any]]:
         """Get the current stylus (Apple Pencil Pro) state.
         

@@ -1,0 +1,190 @@
+{
+  "left": {
+    "states": {
+      "live": 22524
+    },
+    "samples_per_s": 41.68190486004522,
+    "input_age_ms": [
+      5.957,
+      11.846,
+      77.984,
+      191.433
+    ],
+    "blending_fraction": 0.01576096608062516,
+    "all_position_error_mm": [
+      19.977,
+      41.695,
+      64.82,
+      168.299
+    ],
+    "live_position_error_mm": [
+      19.924,
+      41.541,
+      64.118,
+      81.631
+    ],
+    "live_mapped_to_command_mm": [
+      6.802,
+      22.577,
+      46.725,
+      79.325
+    ],
+    "live_command_to_measured_mm": [
+      10.466,
+      26.039,
+      43.264,
+      57.729
+    ],
+    "live_orientation_error_deg": [
+      8.707,
+      17.664,
+      24.74,
+      47.762
+    ],
+    "speed_rad_s": [
+      0.016,
+      0.067,
+      0.414,
+      2.711
+    ],
+    "small_motion_windows": 6387,
+    "small_motion_mapped_mm": [
+      2.099,
+      3.452,
+      8.694,
+      14.991
+    ],
+    "small_motion_command_mm": [
+      1.024,
+      2.687,
+      6.636,
+      20.855
+    ],
+    "small_motion_measured_mm": [
+      0.123,
+      1.391,
+      6.918,
+      19.986
+    ],
+    "lag_estimates": {
+      "mapped_command": {
+        "lag_s": 0.04,
+        "correlation": 0.918
+      },
+      "command_actual": {
+        "lag_s": 0.2,
+        "correlation": 0.676
+      },
+      "mapped_actual": {
+        "lag_s": 0.26,
+        "correlation": 0.575
+      }
+    },
+    "finger_current_peak_a": [
+      0.196,
+      0.502,
+      0.523,
+      0.683
+    ],
+    "finger_target_error_rad": [
+      0.034,
+      0.174,
+      0.622,
+      0.954
+    ]
+  },
+  "right": {
+    "states": {
+      "live": 22524
+    },
+    "samples_per_s": 41.68190486004522,
+    "input_age_ms": [
+      5.957,
+      11.846,
+      77.984,
+      191.433
+    ],
+    "blending_fraction": 0.014073876753684988,
+    "all_position_error_mm": [
+      19.421,
+      41.072,
+      58.484,
+      152.742
+    ],
+    "live_position_error_mm": [
+      19.328,
+      40.911,
+      57.666,
+      75.959
+    ],
+    "live_mapped_to_command_mm": [
+      2.65,
+      6.174,
+      35.88,
+      73.262
+    ],
+    "live_command_to_measured_mm": [
+      14.34,
+      34.455,
+      49.974,
+      66.109
+    ],
+    "live_orientation_error_deg": [
+      8.466,
+      15.641,
+      33.31,
+      66.531
+    ],
+    "speed_rad_s": [
+      0.021,
+      0.087,
+      0.456,
+      2.363
+    ],
+    "small_motion_windows": 7948,
+    "small_motion_mapped_mm": [
+      2.082,
+      3.251,
+      8.652,
+      14.936
+    ],
+    "small_motion_command_mm": [
+      0.903,
+      2.526,
+      7.117,
+      15.967
+    ],
+    "small_motion_measured_mm": [
+      0.12,
+      1.266,
+      6.513,
+      20.975
+    ],
+    "lag_estimates": {
+      "mapped_command": {
+        "lag_s": 0.04,
+        "correlation": 0.897
+      },
+      "command_actual": {
+        "lag_s": 0.16,
+        "correlation": 0.651
+      },
+      "mapped_actual": {
+        "lag_s": 0.24,
+        "correlation": 0.527
+      }
+    },
+    "finger_current_peak_a": [
+      0.339,
+      0.51,
+      0.54,
+      0.622
+    ],
+    "finger_target_error_rad": [
+      0.062,
+      0.366,
+      0.706,
+      1.167
+    ]
+  }
+}

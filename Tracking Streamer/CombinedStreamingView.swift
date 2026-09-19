@@ -2771,15 +2771,17 @@ private struct StateChangeModifiers: ViewModifier {
                 if status == "Peer disconnected" || status.contains("ICE disconnected") || status.contains("ICE failed") || status.contains("ICE closed") {
                     dlog("🔄 [CombinedStreamingView] Disconnection detected ('\(status)'), restarting VideoStreamManager...")
                     
-                    // Stop with preserveForReconnect=true to keep WebRTCClient and its signaling callbacks
-                    // This is critical for cross-network mode where the same WebRTCClient handles reconnection
-                    videoStreamManager.stop(preserveForReconnect: true)
-                    
-                    // Reset UI state
-                    resetStreamingState()
-                    
-                    // Restart after brief delay to allow cleanup
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    // A transient ICE disconnect may recover on its own. Cancel
+                    // stale delayed restarts when an advert or recovery has won.
+                    let generation = dataManager.webrtcGeneration
+                    let delay = status.contains("ICE disconnected") ? 5.0 : 1.0
+                    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                        guard dataManager.webrtcGeneration == generation,
+                              dataManager.connectionStatus == status,
+                              generation >= 0,
+                              !dataManager.webRTCPeerConnected else { return }
+                        videoStreamManager.stop(preserveForReconnect: true)
+                        resetStreamingState()
                         videoStreamManager.start(imageData: imageData)
                     }
                 }

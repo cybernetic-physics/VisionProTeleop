@@ -1,0 +1,10 @@
+Wuji Hand 2 Beta 2: pinned 20-joint hands; anatomical palm mapping.
+Workspace scale: 1. Press c, then look forward with open hands in front through the 5-second countdown. This captures the frame, not your maximum reach.
+Arm hardware velocity ceilings (rad/s): {"left_shoulder_pitch_joint": 37.0, "left_shoulder_roll_joint": 37.0, "left_shoulder_yaw_joint": 37.0, "left_elbow_joint": 37.0, "left_wrist_roll_joint": 37.0, "left_wrist_pitch_joint": 22.0, "left_wrist_yaw_joint": 22.0, "right_shoulder_pitch_joint": 37.0, "right_shoulder_roll_joint": 37.0, "right_shoulder_yaw_joint": 37.0, "right_elbow_joint": 37.0, "right_wrist_roll_joint": 37.0, "right_wrist_pitch_joint": 22.0, "right_wrist_yaw_joint": 22.0}
+Motion profile: urdf; 30 rad/s^2; Cartesian response unfiltered; measured-posture IK.
+Effective trajectory speed ceilings (rad/s): {"left_shoulder_pitch_joint": 37.0, "left_shoulder_roll_joint": 37.0, "left_shoulder_yaw_joint": 37.0, "left_elbow_joint": 37.0, "left_wrist_roll_joint": 37.0, "left_wrist_pitch_joint": 22.0, "left_wrist_yaw_joint": 22.0, "right_shoulder_pitch_joint": 37.0, "right_shoulder_roll_joint": 37.0, "right_shoulder_yaw_joint": 37.0, "right_elbow_joint": 37.0, "right_wrist_roll_joint": 37.0, "right_wrist_pitch_joint": 22.0, "right_wrist_yaw_joint": 22.0}
+Vision Pro -> G1-Dredd + Wuji Hand 2 Beta 2. Face forward, show open hands; press c: capture workspace after 5 seconds; press q: quit. No Enter needed in a terminal.
+Bridge diagnostics: /home/g1gen5/Projects/shoot/dredd-recordings/bridge-20260919T182045Z-9c39d5f7
+Vision Pro: Connecting
+preview (c starts 5-second capture) {'left': 'capture workspace (c)', 'right': 'capture workspace (c)'}
+Vision Pro: Reconnecting: UNAVAILABLE: failed to connect to all addresses; last error: UNKNOWN: ipv4:192.168.50.236:12345: Failed to connect to remote host: Connection refused

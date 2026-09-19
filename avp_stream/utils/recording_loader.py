@@ -10,6 +10,8 @@ Example:
 """
 
 import json
+import base64
+from avp_stream.controllers import decode_controllers
 import numpy as np
 from pathlib import Path
 from typing import Dict, List, Any, Union
@@ -100,7 +102,14 @@ def _parse_frame(frame_data: Dict[str, Any]) -> Dict[str, Any]:
         theta_x = np.arctan2(R_after_y[1, 2], R_after_y[1, 1])
         return float(theta_x)
     
+    # Native app recordings preserve the same dedicated controller protobuf.
+    from avp_stream.grpc_msg.handtracking_pb2 import ControllerTracking
+    packet = None
+    if frame_data.get("controllerTracking"):
+        packet = ControllerTracking.FromString(base64.b64decode(frame_data["controllerTracking"], validate=True))
+    controllers = decode_controllers(packet, axis_transform=YUP2ZUP, live=False)
     return {
+        'controllers': controllers,
         'head': head,
         'left_wrist': left_wrist,
         'right_wrist': right_wrist,

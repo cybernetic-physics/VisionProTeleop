@@ -1,0 +1,7 @@
+.........10 mm IK step, ideal measured feedback: 50% response 80 -> 20 ms
+..0.25 mm, 5 Hz input: output peak-to-peak 0.472 mm
+........................................................................................left: live -> holding
+left: holding -> reacquiring
+left: reacquiring -> live
+....
+103 passed in 51.16s

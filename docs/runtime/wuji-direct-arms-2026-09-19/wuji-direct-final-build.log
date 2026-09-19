@@ -1,0 +1,4 @@
+   Compiling dredd-dds v0.1.0 (/home/g1gen5/Projects/dredd-teach-mode-adam/services/g1-dredd/crates/dredd-dds)
+   Compiling dredd-runtime v0.1.0 (/home/g1gen5/Projects/dredd-teach-mode-adam/services/g1-dredd/crates/dredd-runtime)
+   Compiling dredd v0.1.0 (/home/g1gen5/Projects/dredd-teach-mode-adam/services/g1-dredd/crates/dredd)
+    Finished `release` profile [optimized] target(s) in 40.73s
