@@ -24,6 +24,66 @@ struct HandTrackingData {
     var Head: simd_float4x4 = simd_float4x4(1)
 }
 
+/// Atomic hand samples, including loss of tracking. Never relabel cached joints as live.
+final class OpticalHandSnapshotStore: @unchecked Sendable {
+    static let shared = OpticalHandSnapshotStore()
+    private let lock = NSLock()
+    private var left = Handtracking_Hand()
+    private var right = Handtracking_Hand()
+    private var sequence: UInt64 = 0
+    private var prediction: TimeInterval = 0.033
+    private var displayPose = HandTrackingData()
+
+    func setPrediction(_ value: Float) {
+        lock.lock()
+        prediction = TimeInterval(value)
+        lock.unlock()
+    }
+    func predictionOffset() -> TimeInterval {
+        lock.lock()
+        defer { lock.unlock() }
+        return prediction
+    }
+    func updateDisplay(_ pose: HandTrackingData) {
+        lock.lock()
+        displayPose = pose
+        lock.unlock()
+    }
+    func displaySnapshot() -> HandTrackingData {
+        lock.lock()
+        defer { lock.unlock() }
+        return displayPose
+    }
+
+    func update(left: Handtracking_Hand, right: Handtracking_Hand) {
+        lock.lock()
+        defer { lock.unlock() }
+        sequence &+= 1
+        self.left = left
+        self.right = right
+        self.left.sampleSequence = sequence
+        self.right.sampleSequence = sequence
+    }
+    func snapshot(at now: UInt64) -> (Handtracking_Hand, Handtracking_Hand) {
+        lock.lock()
+        defer { lock.unlock() }
+        func checked(_ source: Handtracking_Hand) -> Handtracking_Hand {
+            var result = source
+            result.trackingVersion = 1
+            if result.skeleton.jointMatrices.count < 27 {
+                result.skeleton.jointMatrices = Array(repeating: createMatrix4x4(from: matrix_identity_float4x4), count: 27)
+                result.jointTracked = Array(repeating: false, count: 27)
+            }
+            if source.sampleTimestampNs == 0 || now < source.sampleTimestampNs || now - source.sampleTimestampNs > 200_000_000 {
+                result.tracked = false
+                result.jointTracked = result.jointTracked.map { _ in false }
+            }
+            return result
+        }
+        return (checked(left), checked(right))
+    }
+}
+
 struct BenchmarkEvent {
     let sequenceID: UInt32
     let sentTimestampMs: UInt32
@@ -435,6 +495,7 @@ class DataManager: ObservableObject {
     // Range: 0 (no prediction) to 0.5 (500ms ahead - maximum)
     @Published var handPredictionOffset: Float {
         didSet {
+            OpticalHandSnapshotStore.shared.setPrediction(handPredictionOffset)
             UserDefaults.standard.set(handPredictionOffset, forKey: "handPredictionOffset")
             syncSettingToiCloud("visionos.handPredictionOffset", value: Double(handPredictionOffset))
         }
@@ -570,7 +631,12 @@ extension 🥽AppModel {
         Task {
             @MainActor in
             do {
-                try await self.session.run([self.handTracking, self.worldTracking, self.sceneReconstruction])
+                // Head/controller streaming must still work when hand tracking is denied.
+                let authorization = await self.session.requestAuthorization(for: [.handTracking, .worldSensing])
+                var providers: [any DataProvider] = [self.worldTracking]
+                if authorization[.handTracking] == .allowed { providers.append(self.handTracking) }
+                if authorization[.worldSensing] == .allowed { providers.append(self.sceneReconstruction) }
+                try await self.session.run(providers)
                 // Use predictive hand tracking with handAnchors(at:) for lower latency
                 // This polls at 120Hz and queries predicted poses at a future timestamp
                 await self.processHandTrackingPredictive()
@@ -593,21 +659,26 @@ extension 🥽AppModel {
     
     @MainActor
     func run_device_tracking(function: () async -> Void, withFrequency hz: UInt64) async {
-        while true {
-            if Task.isCancelled {
-                return
-            }
-            
-            // Sleep for 1 s / hz before calling the function.
-            let nanoSecondsToSleep: UInt64 = NSEC_PER_SEC / hz
-            do {
-                try await Task.sleep(nanoseconds: nanoSecondsToSleep)
-            } catch {
-                // Sleep fails when the Task is cancelled. Exit the loop.
-                return
-            }
-            
+        let clock = ContinuousClock()
+        let interval = Duration.nanoseconds(Int64(NSEC_PER_SEC / hz))
+        var deadline = clock.now
+        while !Task.isCancelled {
             await function()
+            deadline += interval
+            // Skip missed ticks instead of running a catch-up burst.
+            if deadline < clock.now { deadline = clock.now + interval }
+            do { try await clock.sleep(until: deadline) }
+            catch { return }
+        }
+    }
+
+    @MainActor
+    func processControllerUpdates() async {
+        await SurrealControllerManager.shared.run { [weak self] timestamp in
+            guard let self, self.worldTracking.state == .running,
+                  let anchor = self.worldTracking.queryDeviceAnchor(atTimestamp: timestamp),
+                  anchor.isTracked else { return nil }
+            return anchor.originFromAnchorTransform
         }
     }
 
@@ -635,59 +706,78 @@ extension 🥽AppModel {
         // dlog(" *** device tracking running ")
 //        dlog(deviceAnchor?.originFromAnchorTransform)
         guard let deviceAnchor else { return }
-        DataManager.shared.latestHandTrackingData.Head = deviceAnchor.originFromAnchorTransform
+        var display = OpticalHandSnapshotStore.shared.displaySnapshot()
+        display.Head = deviceAnchor.originFromAnchorTransform
+        DataManager.shared.latestHandTrackingData = display
             }
 
-    /// Process hand updates using predictive handAnchors(at:) polling instead of anchorUpdates stream.
-    /// This allows querying predicted hand poses at future timestamps for lower perceived latency.
-    /// The prediction offset is configurable via DataManager.shared.handPredictionOffset (0 to 0.5 seconds).
-    private func processHandUpdatesPredictive() async {
-        guard handTracking.state == .running else { return }
-        
-        // Use pre-computed static joint types array for better performance
-        let jointTypes = Self.jointTypes
-        
-        // Query hand anchors at a slightly future timestamp for prediction
-        // Use configurable prediction offset from DataManager
-        let predictionOffset = TimeInterval(DataManager.shared.handPredictionOffset)
-        let targetTimestamp = CACurrentMediaTime() + predictionOffset
-        let anchors = handTracking.handAnchors(at: targetTimestamp)
-        
-        // Process left hand
-        if let leftAnchor = anchors.leftHand {
-            if leftAnchor.isTracked {
-                DataManager.shared.latestHandTrackingData.leftWrist = leftAnchor.originFromAnchorTransform
-            }
-            
-            if let skeleton = leftAnchor.handSkeleton {
-                for (index, jointType) in jointTypes.enumerated() {
-                    let joint = skeleton.joint(jointType)
-                    DataManager.shared.latestHandTrackingData.leftSkeleton.joints[index] = joint.anchorFromJointTransform
-                }
-            }
-        }
-        
-        // Process right hand
-        if let rightAnchor = anchors.rightHand {
-            if rightAnchor.isTracked {
-                DataManager.shared.latestHandTrackingData.rightWrist = rightAnchor.originFromAnchorTransform
-            }
-            
-            if let skeleton = rightAnchor.handSkeleton {
-                for (index, jointType) in jointTypes.enumerated() {
-                    let joint = skeleton.joint(jointType)
-                    DataManager.shared.latestHandTrackingData.rightSkeleton.joints[index] = joint.anchorFromJointTransform
-                }
-            }
-        }
-    }
-    
-    /// Run predictive hand tracking at high frequency (replaces processHandUpdates)
+    /// ARKit's provider is Sendable. Poll and serialize independently of SwiftUI,
+    /// video upload and recording; the network consumes the atomic latest sample.
     @MainActor
     func processHandTrackingPredictive() async {
-        await run_device_tracking(function: self.processHandUpdatesPredictive, withFrequency: 120)
+        let provider = handTracking
+        let jointTypes = Self.jointTypes
+        OpticalHandSnapshotStore.shared.setPrediction(DataManager.shared.handPredictionOffset)
+        let worker = Task.detached(priority: .high) {
+            let store = OpticalHandSnapshotStore.shared
+            let clock = ContinuousClock()
+            let interval = Duration.nanoseconds(8_333_333)
+            var deadline = clock.now
+            var display = HandTrackingData()
+            var samples = 0
+            var reportAt = CACurrentMediaTime()
+            while !Task.isCancelled {
+                let now = CACurrentMediaTime()
+                let prediction = store.predictionOffset()
+                let running = provider.state == .running
+                let anchors = running ? provider.handAnchors(at: now + prediction) : (leftHand: nil, rightHand: nil)
+                func sample(_ anchor: HandAnchor?) -> Handtracking_Hand {
+                    var hand = Handtracking_Hand()
+                    hand.trackingVersion = 1
+                    hand.sampleTimestampNs = UInt64(now * 1e9)
+                    hand.predictionMs = Float(prediction * 1000)
+                    guard running, let anchor, anchor.isTracked, let skeleton = anchor.handSkeleton else { return hand }
+                    hand.tracked = true
+                    hand.wristMatrix = createMatrix4x4(from: anchor.originFromAnchorTransform)
+                    for type in jointTypes {
+                        let joint = skeleton.joint(type)
+                        hand.skeleton.jointMatrices.append(createMatrix4x4(from: joint.anchorFromJointTransform))
+                        hand.jointTracked.append(joint.isTracked)
+                    }
+                    return hand
+                }
+                let left = sample(anchors.leftHand), right = sample(anchors.rightHand)
+                // Sampling never awaits the UI. Main-thread display copies may lag
+                // without delaying or making a stale robot sample appear fresh.
+                store.update(left: left, right: right)
+                if let anchor = anchors.leftHand, left.tracked, let skeleton = anchor.handSkeleton {
+                    display.leftWrist = anchor.originFromAnchorTransform
+                    display.leftSkeleton.joints = jointTypes.map { skeleton.joint($0).anchorFromJointTransform }
+                }
+                if let anchor = anchors.rightHand, right.tracked, let skeleton = anchor.handSkeleton {
+                    display.rightWrist = anchor.originFromAnchorTransform
+                    display.rightSkeleton.joints = jointTypes.map { skeleton.joint($0).anchorFromJointTransform }
+                }
+                store.updateDisplay(display)
+                samples += 1
+                if now - reportAt >= 5 {
+                    dlog("Tracking worker: \(Double(samples) / (now - reportAt)) samples/s")
+                    samples = 0
+                    reportAt = now
+                }
+                deadline += interval
+                if deadline < clock.now { deadline = clock.now + interval }
+                do { try await clock.sleep(until: deadline) }
+                catch { return }
+            }
+        }
+        await withTaskCancellationHandler {
+            await worker.value
+        } onCancel: {
+            worker.cancel()
+        }
     }
-    
+
     /// Legacy: Process hand updates using anchorUpdates stream (event-driven, non-predictive)
     private func processHandUpdates() async {
         for await update in self.handTracking.anchorUpdates {
@@ -751,38 +841,13 @@ func startServerLegacy() {
 func fill_handUpdate() -> Handtracking_HandUpdate {
     var handUpdate = Handtracking_HandUpdate()
     
-    // Assuming DataManager provides an ordered list/array of joints for leftSkeleton and rightSkeleton
-    let leftJoints = DataManager.shared.latestHandTrackingData.leftSkeleton.joints
-    let rightJoints = DataManager.shared.latestHandTrackingData.rightSkeleton.joints
-    let leftWrist = DataManager.shared.latestHandTrackingData.leftWrist
-    let rightWrist = DataManager.shared.latestHandTrackingData.rightWrist
-    let Head = DataManager.shared.latestHandTrackingData.Head
-    
-    
-    handUpdate.leftHand.wristMatrix = createMatrix4x4(from: leftWrist)
-    handUpdate.rightHand.wristMatrix = createMatrix4x4(from: rightWrist)
-    handUpdate.head = createMatrix4x4(from: Head)
-    
-    // Fill left hand joints
-    for (index, jointMatrix) in leftJoints.enumerated() {
-        let matrix = createMatrix4x4(from: jointMatrix)
-        if index < handUpdate.leftHand.skeleton.jointMatrices.count {
-            handUpdate.leftHand.skeleton.jointMatrices[index] = matrix
-        } else {
-            handUpdate.leftHand.skeleton.jointMatrices.append(matrix)
-        }
-    }
+    handUpdate.timestampNs = UInt64(CACurrentMediaTime() * 1e9)
+    let (left, right) = OpticalHandSnapshotStore.shared.snapshot(at: handUpdate.timestampNs)
+    handUpdate.leftHand = left
+    handUpdate.rightHand = right
+    handUpdate.head = createMatrix4x4(from: DataManager.shared.latestHandTrackingData.Head)
+    handUpdate.controllers = SurrealControllerManager.snapshots.snapshot()
 
-    // Fill right hand joints
-    for (index, jointMatrix) in rightJoints.enumerated() {
-        let matrix = createMatrix4x4(from: jointMatrix)
-        if index < handUpdate.rightHand.skeleton.jointMatrices.count {
-            handUpdate.rightHand.skeleton.jointMatrices[index] = matrix
-        } else {
-            handUpdate.rightHand.skeleton.jointMatrices.append(matrix)
-        }
-    }
-    
     // MARKER DETECTION: Append detected markers as additional matrices in right hand skeleton
     // Format: After normal 27 joints, append:
     //   - Header matrix: m00=666.0 (marker data signal), m01=marker_count

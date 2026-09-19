@@ -199,9 +199,17 @@
       }
     },
     {
+      "identity" : "swiftsdkbinary",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/surreal-interactive/SwiftSDKBinary.git",
+      "state" : {
+        "revision" : "a42deb007c7f12afb543b235b75464e86e00125a"
+      }
+    },
+    {
       "identity" : "webrtc-xcframework",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:livekit/webrtc-xcframework.git",
+      "location" : "https://github.com/livekit/webrtc-xcframework.git",
       "state" : {
         "revision" : "5b40f56c637369064b9c82e8f9cfa820f942658f",
         "version" : "137.7151.10"

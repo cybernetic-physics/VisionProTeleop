@@ -59,6 +59,7 @@ enum ExpandedPanel: Equatable {
     case handTracking  // Hand tracking configuration (prediction, etc.)
     case stereoBaseline  // Stereo IPD/baseline adjustment
     case markerDetection  // ArUco marker detection settings
+    case surrealControllers
     case accessoryTracking  // Spatial controller tracking (visionOS 26+)
     case usdzCache  // USDZ scene cache management
 }
@@ -1833,6 +1834,16 @@ struct StatusOverlay: View {
                 }
             }
             
+            menuItem(
+                icon: "gamecontroller.fill",
+                title: "Surreal Touch",
+                subtitle: "Controllers & individual inputs",
+                isExpanded: false,
+                accentColor: .mint
+            ) {
+                withAnimation { expandedPanel = .surrealControllers }
+            }
+
             // Marker Detection (Teleop mode only)
             if appMode == .teleop {
                 let markerManager = MarkerDetectionManager.shared
@@ -1912,6 +1923,8 @@ struct StatusOverlay: View {
                 markerDetectionPanelContent
             case .usdzCache:
                 usdzCachePanelContent
+            case .surrealControllers:
+                SurrealControllerPanel()
             case .accessoryTracking:
                 if #available(visionOS 26.0, *) {
                     accessoryTrackingPanelContent
@@ -1939,6 +1952,7 @@ struct StatusOverlay: View {
         case .stereoBaseline: return "Stereo Baseline"
         case .markerDetection: return "Marker Detection"
         case .usdzCache: return "USDZ Cache"
+        case .surrealControllers: return "Surreal Touch Controllers"
         case .accessoryTracking: return "Accessory Tracking"
         case .none: return ""
         }

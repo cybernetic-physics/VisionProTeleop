@@ -25,6 +25,7 @@ enum OnboardingState: Equatable {
 
 struct ContentView: View {
     @Environment(\.openImmersiveSpace) var openImmersiveSpace
+    @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) var dismissWindow
     @State private var showVideoStream = false
     @AppStorage("pythonServerIP") private var pythonServerIP = "10.29.239.70"
@@ -168,8 +169,15 @@ struct ContentView: View {
             signalingClient.connect()
             DataManager.shared.crossNetworkRoomCode = signalingClient.roomCode
             
-            await self.openImmersiveSpace(id: "combinedStreamSpace")
-            self.dismissWindow()
+            let result = await self.openImmersiveSpace(id: "combinedStreamSpace")
+            if case .opened = result {
+                let controllers = SurrealControllerManager.shared
+                if controllers.isEnabled && controllers.reviewCalibrationOnStartup {
+                    controllers.beginCalibration()
+                    openWindow(id: "controllerCalibration")
+                }
+                self.dismissWindow()
+            }
         }
     }
     
@@ -218,6 +226,7 @@ struct ContentView: View {
     // MARK: - Main Content View
     private var mainContentView: some View {
         VStack(spacing: 32) {
+            VisionProHandsStartButton()
             VStack(spacing: 4) {
                 Text("VisionProTeleop")
                     .font(.system(size: 72, weight: .bold))

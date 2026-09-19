@@ -1,5 +1,33 @@
 {
-  "head": {"serial": "254322072098", "width": 848, "height": 480, "fps": 30, "port": 5560},
-  "left": {"serial": "260322274506", "width": 480, "height": 270, "fps": 30, "port": 5561},
-  "right": {"serial": "260322274429", "width": 480, "height": 270, "fps": 30, "port": 5562}
+  "head": {
+    "serial": "254322072098",
+    "width": 848,
+    "height": 480,
+    "fps": 30,
+    "port": 5560
+  },
+  "left": {
+    "serial": "260322274506",
+    "width": 480,
+    "height": 270,
+    "fps": 30,
+    "port": 5561,
+    "image_options": {
+      "enable_auto_exposure": 1,
+      "brightness": 10,
+      "gamma": 400
+    }
+  },
+  "right": {
+    "serial": "260322274429",
+    "width": 480,
+    "height": 270,
+    "fps": 30,
+    "port": 5562,
+    "image_options": {
+      "enable_auto_exposure": 1,
+      "brightness": 10,
+      "gamma": 400
+    }
+  }
 }

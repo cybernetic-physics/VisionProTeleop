@@ -11,6 +11,11 @@ struct VisionProTeleopApp: App {
         }
         .windowResizability(.contentSize)
         
+        WindowGroup(id: "controllerCalibration") {
+            ControllerCalibrationView()
+        }
+        .windowResizability(.contentSize)
+
         // Hand tracking view (existing)
         ImmersiveSpace(id: "immersiveSpace") {
             🌐RealityView(model: appModel)
@@ -38,6 +43,10 @@ struct VisionProTeleopApp: App {
         dlog("🚀 [DEBUG] VisionProTeleopApp.init() - App launching...")
         🧑HeadTrackingComponent.registerComponent()
         🧑HeadTrackingSystem.registerSystem()
+        SurrealControllerOverlayComponent.registerComponent()
+        SurrealControllerOverlaySystem.registerSystem()
+        WujiGloveOverlayComponent.registerComponent()
+        WujiGloveOverlaySystem.registerSystem()
         
         // Start gRPC server immediately when app launches
         dlog("🌐 [DEBUG] Starting gRPC server on app launch...")

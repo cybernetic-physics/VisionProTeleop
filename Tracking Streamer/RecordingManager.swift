@@ -24,6 +24,8 @@ struct RecordedFrame: Codable {
     let videoFrameIndex: Int  // Index into video frames
     let videoWidth: Int
     let videoHeight: Int
+    // Codable stores protobuf bytes as base64; old recordings omit this optional field.
+    var controllerTracking: Data? = nil
 }
 
 /// A single frame of simulation data
@@ -284,6 +286,8 @@ class RecordingManager: ObservableObject {
     private var recordingStartTime: Date?
     private var durationTimer: Timer?
     private var sessionID: String = ""
+    nonisolated private let videoAdmissionLock = NSLock()
+    nonisolated(unsafe) private var videoFrameInFlight = false
     private let recordingQueue = DispatchQueue(label: "com.visionproteleop.recording", qos: .userInitiated)
     private let videoWriterQueue = DispatchQueue(label: "com.visionproteleop.videowriter", qos: .userInitiated)
     
@@ -596,24 +600,38 @@ class RecordingManager: ObservableObject {
     /// This is VIDEO-DRIVEN: call this whenever a new video frame arrives.
     /// The latest tracking data is captured and paired with this video frame.
     nonisolated func recordVideoFrame(_ videoFrame: UIImage) {
-        // Capture time immediately
+        // Bound work before either actor or encoder dispatch. Recording must not
+        // accumulate old images and compete with current tracking/video frames.
+        videoAdmissionLock.lock()
+        let admitted = !videoFrameInFlight
+        if admitted { videoFrameInFlight = true }
+        videoAdmissionLock.unlock()
+        guard admitted else { return }
         let captureTime = Date()
-        
-        // Dispatch to background immediately to avoid blocking
-        Task.detached(priority: .userInitiated) { [weak self] in
-            await self?.processVideoFrame(videoFrame, captureTime: captureTime)
+        Task { @MainActor [weak self] in
+            self?.processVideoFrame(videoFrame, captureTime: captureTime)
         }
     }
-    
-    /// Process a video frame on the background queue
-    private func processVideoFrame(_ videoFrame: UIImage, captureTime: Date) async {
-        guard isRecording, let startTime = recordingStartTime else { return }
-        
+
+    nonisolated private func releaseVideoFrame() {
+        videoAdmissionLock.lock()
+        videoFrameInFlight = false
+        videoAdmissionLock.unlock()
+    }
+
+    /// Snapshot tracking quickly on its actor; encode on the recording worker.
+    private func processVideoFrame(_ videoFrame: UIImage, captureTime: Date) {
+        guard isRecording, let startTime = recordingStartTime else {
+            releaseVideoFrame()
+            return
+        }
+        let recordingSessionID = sessionID
         let timestamp = max(0, captureTime.timeIntervalSince(startTime))
         let systemTime = captureTime.timeIntervalSince1970
         
         // Capture the LATEST tracking data at this moment
         let trackingData = DataManager.shared.latestHandTrackingData
+        let controllerTracking = try? SurrealControllerManager.snapshots.snapshot().serializedData()
         
         // Get image dimensions
         let width = Int(videoFrame.size.width)
@@ -622,6 +640,7 @@ class RecordingManager: ObservableObject {
         // Do the rest on recording queue
         recordingQueue.async { [weak self] in
             guard let self = self else { return }
+            defer { self.releaseVideoFrame() }
             
             let frameIndex = self.pendingFrameCount
             
@@ -629,7 +648,7 @@ class RecordingManager: ObservableObject {
             if !self.isWriterSessionStarted {
                 do {
                     let baseURL = try self.getStorageURLSync()
-                    let recordingFolder = baseURL.appendingPathComponent(self.sessionID)
+                    let recordingFolder = baseURL.appendingPathComponent(recordingSessionID)
                     try FileManager.default.createDirectory(at: recordingFolder, withIntermediateDirectories: true)
                     self.recordingFolderURL = recordingFolder
                     
@@ -695,7 +714,8 @@ class RecordingManager: ObservableObject {
                 rightHand: rightHand,
                 videoFrameIndex: frameIndex,
                 videoWidth: width,
-                videoHeight: height
+                videoHeight: height,
+                controllerTracking: controllerTracking
             )
             
             // Append to tracking data array
@@ -738,6 +758,7 @@ class RecordingManager: ObservableObject {
         
         // Capture the latest tracking data
         let trackingData = DataManager.shared.latestHandTrackingData
+        let controllerTracking = try? SurrealControllerManager.snapshots.snapshot().serializedData()
         
         recordingQueue.async { [weak self] in
             guard let self = self else { return }
@@ -772,7 +793,8 @@ class RecordingManager: ObservableObject {
                 rightHand: rightHand,
                 videoFrameIndex: -1,  // No video frame
                 videoWidth: 0,
-                videoHeight: 0
+                videoHeight: 0,
+                controllerTracking: controllerTracking
             )
             
             self.recordedFrames.append(recordedFrame)
@@ -823,6 +845,7 @@ class RecordingManager: ObservableObject {
         guard isRecording, let startTime = recordingStartTime else { return }
         
         let relativeTimestamp = timestamp - startTime.timeIntervalSince1970
+        let controllerTracking = try? SurrealControllerManager.snapshots.snapshot().serializedData()
         
         // Prepare tracking data if available
         var headMatrixArray: [Float]? = nil
@@ -857,7 +880,8 @@ class RecordingManager: ObservableObject {
                     rightHand: rightHand,
                     videoFrameIndex: -1,  // No video frame for simulation-only recordings
                     videoWidth: 0,
-                    videoHeight: 0
+                    videoHeight: 0,
+                controllerTracking: controllerTracking
                 )
                 self.recordedFrames.append(recordedFrame)
             }

@@ -8,7 +8,7 @@ setup(
     author_email='younghyo@mit.edu',
     packages=find_packages(),
     install_requires=[
-        'numpy', 'grpcio', 'grpcio-tools', 'matplotlib', 'opencv-python', 
+        'numpy', 'grpcio', 'grpcio-tools', 'protobuf>=5.29.0', 'matplotlib', 'opencv-python',
         'aiortc', 'av', 'requests', 'pyyaml', 'mujoco', 'tqdm', 'scipy', 'pydub',
         'websocket-client', 'gdown', 'flask'
     ],

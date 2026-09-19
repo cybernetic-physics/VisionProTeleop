@@ -622,7 +622,7 @@ class VideoStreamManager: ObservableObject {
                     if Task.isCancelled { return }
                     
                     // Check for local gRPC connection (Python connected via IP)
-                    if DataManager.shared.pythonClientIP != nil {
+                    if DataManager.shared.pythonClientIP != nil || DataManager.shared.webrtcServerInfo != nil {
                         connectionMode = .local
                         dlog("✅ [DEBUG] Local Python client detected via gRPC (attempt \(attempt))")
                         break
@@ -803,6 +803,11 @@ class VideoFrameRenderer: NSObject, LKRTCVideoRenderer {
     weak var imageData: ImageData?
     // Reuse CIContext for performance (creating it every frame is expensive)
     private let context = CIContext()
+    private let conversionQueue = DispatchQueue(label: "com.visionproteleop.video-conversion", qos: .userInitiated)
+    private let frameLock = NSLock()
+    private var pendingFrame: LKRTCVideoFrame?
+    private var conversionRunning = false
+
     private let benchmarkMagic: UInt8 = 0x5A
     private let benchmarkRows = 8
     private let benchmarkCols = 9
@@ -825,8 +830,28 @@ class VideoFrameRenderer: NSObject, LKRTCVideoRenderer {
     }
     
     func renderFrame(_ frame: LKRTCVideoFrame?) {
-        guard let frame = frame else { return }
-        
+        guard let frame else { return }
+        frameLock.lock()
+        pendingFrame = frame
+        let startWorker = !conversionRunning
+        conversionRunning = true
+        frameLock.unlock()
+        if startWorker { convertNextFrame() }
+    }
+
+    private func convertNextFrame() {
+        frameLock.lock()
+        let frame = pendingFrame
+        pendingFrame = nil
+        if frame == nil { conversionRunning = false }
+        frameLock.unlock()
+        guard let frame else { return }
+        conversionQueue.async { [weak self] in
+            self?.convertFrame(frame)
+        }
+    }
+
+    private func convertFrame(_ frame: LKRTCVideoFrame) {
         // Update stats (FPS and Resolution)
         let currentTime = CACurrentMediaTime()
         frameCount += 1
@@ -850,7 +875,7 @@ class VideoFrameRenderer: NSObject, LKRTCVideoRenderer {
         
         // Extract or convert to CVPixelBuffer
         let pixelBuffer = extractPixelBuffer(from: frame)
-        guard let cvPixelBuffer = pixelBuffer else { return }
+        guard let cvPixelBuffer = pixelBuffer else { convertNextFrame(); return }
         
         // Convert CVPixelBuffer to UIImage
         if let payload = detectBenchmarkPayload(pixelBuffer: cvPixelBuffer) {
@@ -859,22 +884,21 @@ class VideoFrameRenderer: NSObject, LKRTCVideoRenderer {
         
         let ciImage = CIImage(cvPixelBuffer: cvPixelBuffer)
         // Use the reused context
-        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { convertNextFrame(); return }
         let uiImage = UIImage(cgImage: cgImage)
 
+        // Cropping/conversion run on the serial worker. Only publishing observable
+        // images and starting recording require the main actor.
+        let stereoImages = splitSideBySideImage(uiImage)
         // Update image data directly
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+            defer { self.convertNextFrame() }
             let isStereo = DataManager.shared.stereoEnabled
-            
-            // Debug: Log stereo mode periodically (every 30 frames ~ 1 second at 30fps)
-            if self.frameCount % 30 == 0 {
-                dlog("🎥 [VideoFrameRenderer] stereoEnabled=\(isStereo), frame=\(self.frameCount)")
-            }
             
             if isStereo {
                 // Optimize: Return CGImages directly instead of wrapping in UIImage
-                if let (leftCG, rightCG) = self.splitSideBySideImage(uiImage) {
+                if let (leftCG, rightCG) = stereoImages {
                     self.imageData?.left = UIImage(cgImage: leftCG)
                     self.imageData?.right = UIImage(cgImage: rightCG)
                 }

@@ -243,8 +243,9 @@ struct HandTrackingServiceImpl: Handtracking_HandTrackingService.SimpleServicePr
                 dlog("🧹 [DEBUG] Cleaning up connection state after main client disconnect")
                 DataManager.shared.pythonClientIP = nil
                 DataManager.shared.pythonLibraryVersionCode = 0  // Reset version on disconnect
-                DataManager.shared.webrtcServerInfo = nil
-                DataManager.shared.webrtcGeneration = -1
+                // The video advertisement has its own lifetime. A tracking-only
+                // subscriber disconnecting must not tear down a separate camera service.
+                // Actual video/ICE loss is handled by VideoStreamManager.
                 DataManager.shared.pythonCalibrationActive = false  // Reset calibration state
             }
         }

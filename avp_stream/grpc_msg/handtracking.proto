@@ -31,6 +31,13 @@ message Skeleton {
 message Hand {
   Matrix4x4 wristMatrix = 1; // 4x4 matrix for the wrist position and orientation
   Skeleton skeleton = 2; // The hand's skeleton
+  // Zero means legacy sender: no tracking-validity guarantee.
+  uint32 tracking_version = 3;
+  bool tracked = 4;
+  uint64 sample_timestamp_ns = 5;
+  uint64 sample_sequence = 6;
+  repeated bool joint_tracked = 7;
+  float prediction_ms = 8;
 }
 
 // The overall hand update message, including data for both hands
@@ -38,6 +45,57 @@ message HandUpdate {
   Hand left_hand = 1;
   Hand right_hand = 2;
   Matrix4x4 Head = 3; 
+  ControllerTracking controllers = 4;
+  uint64 timestamp_ns = 5; // serialization time in headset monotonic clock
+}
+
+// Independent controller inputs. An inactive input is not a held/released value.
+message ControllerInput {
+  string name = 1;
+  bool active = 2;
+  bool is_boolean = 3;
+  float value = 4;
+  bool pressed = 5;
+  uint64 last_change_time_ns = 6;
+}
+
+message ControllerState {
+  // Runtime action activity, not a Bluetooth connection guarantee.
+  bool active = 1;
+  bool pose_valid = 2;
+  // Right-handed, meters, X right / Y up / -Z forward, in Surreal LOCAL space.
+  Matrix4x4 pose = 3;
+  repeated ControllerInput inputs = 4;
+  // Manually corrected ARKit worldFromGrip. Raw LOCAL pose remains in field 3.
+  Matrix4x4 pose_world = 5;
+  // Diagnostic only; never makes an invalid pose usable for tracking.
+  string pose_status = 6;
+}
+
+message ControllerCalibration {
+  Matrix4x4 world_from_local = 1;
+  Matrix4x4 left_grip_offset = 2;
+  Matrix4x4 right_grip_offset = 3;
+  bool saved = 4;
+  bool preview = 5;
+  bool reviewed_this_session = 6;
+  Matrix4x4 left_wrist_offset = 7;
+  Matrix4x4 right_wrist_offset = 8;
+}
+
+message ControllerTracking {
+  uint32 version = 1;
+  bool enabled = 2;
+  uint64 timestamp_ns = 3;
+  uint64 sequence = 4;
+  ControllerState left = 5;
+  ControllerState right = 6;
+  // Raw ARKit worldFromHead, queried at timestamp_ns. No Python head-axis offset.
+  Matrix4x4 head_pose = 7;
+  bool head_pose_valid = 8;
+  string source = 9;
+  ControllerCalibration calibration = 10;
+  WujiGloveTracking gloves = 11;
 }
 
 // The hand tracking service definition.
@@ -48,4 +106,24 @@ service HandTrackingService {
 // Acknowledgement message for hand updates
 message HandUpdateAck {
   string message = 1;
+}
+
+// Glove skeletons stay distinct from ARKit optical hands. Positions are meters.
+message WujiGloveState {
+  bool valid = 1;
+  string status = 2;
+  string serial = 3;
+  uint64 sequence = 4;
+  uint64 source_timestamp_us = 5;
+  uint64 timestamp_ns = 6; // capture time mapped to headset monotonic clock
+  float uncertainty_ms = 7; // estimated sync error, not a measured guarantee
+  repeated float points_wrist = 8; // 21 xyz triples, MediaPipe order
+  repeated float confidence = 9;
+  Matrix4x4 wrist_world = 10;
+  Matrix4x4 head_world = 11; // interpolated at the same capture time
+}
+message WujiGloveTracking {
+  uint32 version = 1;
+  WujiGloveState left = 2;
+  WujiGloveState right = 3;
 }

@@ -1,0 +1,24 @@
+{
+  "seconds": 15.002552749000188,
+  "counts": {
+    "left_samples": 1520,
+    "left_valid": 1370,
+    "left_optical hand not tracked": 150,
+    "right_samples": 1520,
+    "right_valid": 1515,
+    "right_Optical tracking": 1515,
+    "right_optical hand not tracked": 5,
+    "left_Optical tracking": 1370
+  },
+  "age_ms_p50_p95_max": [
+    8.274812500758344,
+    21.699900001749484,
+    99.3922970010317
+  ],
+  "sample_intervals_ms_p50_p95_max": [
+    8.480127999973774,
+    13.448514999709005,
+    103.97984600012933
+  ]
+}
+{"video_connected_after_tracking_disconnect": true, "camera_fps": [27.39942741394043, 28.377979278564453, 28.377979278564453]}

@@ -47,6 +47,41 @@ def write_status(path, status):
     os.replace(str(temporary), str(path))
 
 
+def configure_image(profile, camera, rs):
+    """Find the sensor carrying color (D405 uses its stereo module)."""
+    requested = camera.get("image_options", {})
+    result = {}
+    for sensor in profile.get_device().query_sensors():
+        if not any(p.stream_type() == rs.stream.color for p in sensor.get_stream_profiles()):
+            continue
+        for name, value in requested.items():
+            try:
+                option = getattr(rs.option, name)
+                if not sensor.supports(option):
+                    raise ValueError("unsupported")
+                limits = sensor.get_option_range(option)
+                if not limits.min <= value <= limits.max:
+                    raise ValueError("outside sensor range")
+                sensor.set_option(option, float(value))
+                result[name] = {"requested": value, "actual": sensor.get_option(option)}
+            except Exception as exc:
+                result[name] = {"requested": value, "error": str(exc)}
+                logging.warning("Camera option %s: %s", name, exc)
+    return result
+
+
+def frame_exposure(frame, rs):
+    result = {}
+    for name in ("actual_exposure", "gain_level", "auto_exposure"):
+        try:
+            key = getattr(rs.frame_metadata_value, name)
+            if frame.supports_frame_metadata(key):
+                result[name] = frame.get_frame_metadata(key)
+        except (AttributeError, RuntimeError):
+            pass
+    return result
+
+
 def run(args):
     # Import before starting any camera. Installation preflight checks these too.
     import cv2
@@ -80,8 +115,9 @@ def run(args):
                                      camera["height"], rs.format.bgr8, camera["fps"])
                 # SDK drops older frames when this one-frame queue is full.
                 queue = rs.frame_queue(1)
-                pipeline.start(config, queue)
+                profile = pipeline.start(config, queue)
                 started = True
+                status["image_options"] = configure_image(profile, camera, rs)
                 session = uuid.uuid4().hex
                 previous_number = None
                 report_at = time.monotonic()
@@ -107,6 +143,8 @@ def run(args):
                     publisher.send(msgpack.packb(packet, use_bin_type=True))
                     now = time.monotonic()
                     if now - report_at >= 1:
+                        status["exposure_metadata"] = frame_exposure(frame, rs)
+                        status["luma_mean"] = float(cv2.cvtColor(pixels, cv2.COLOR_BGR2GRAY).mean())
                         status.update(state="streaming", error=None, frames=sequence,
                                       fps=(sequence-report_count)/(now-report_at),
                                       updated_monotonic_s=now,

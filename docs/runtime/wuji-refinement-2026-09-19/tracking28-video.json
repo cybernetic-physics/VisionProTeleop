@@ -1,0 +1,27 @@
+{
+  "seconds": 30.005065770999863,
+  "counts": {
+    "left_samples": 1164,
+    "left_valid": 1047,
+    "left_Waiting for optical hand": 2,
+    "right_samples": 1164,
+    "right_valid": 1038,
+    "right_Waiting for optical hand": 2,
+    "left_optical hand not tracked": 89,
+    "right_optical hand not tracked": 98,
+    "left_Optical tracking": 1047,
+    "right_Optical tracking": 1038,
+    "left_Optical hand stale": 26,
+    "right_Optical hand stale": 26
+  },
+  "age_ms_p50_p95_max": [
+    7.606899006987078,
+    80.45023399745332,
+    199.73354799594745
+  ],
+  "sample_intervals_ms_p50_p95_max": [
+    21.542073000091477,
+    76.26027500009513,
+    445.8568310001283
+  ]
+}
