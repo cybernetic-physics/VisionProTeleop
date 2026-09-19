@@ -225,9 +225,8 @@ struct StatusOverlay: View {
                     pythonIP = "Not connected"
                 }
                 
-                // Check for WebRTC connection via either local or remote
-                let localWebrtcConnected = DataManager.shared.webrtcServerInfo != nil
-                webrtcConnected = localWebrtcConnected || remotePythonConnected
+                // A signaling advert or a room peer is not an established media connection.
+                webrtcConnected = DataManager.shared.webRTCPeerConnected
                 
                 // Toggle trigger to force MuJoCo status update
                 mujocoStatusUpdateTrigger.toggle()

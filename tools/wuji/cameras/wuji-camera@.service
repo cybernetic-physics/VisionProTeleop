@@ -1,0 +1,16 @@
+[Unit]
+Description=Wuji %i RealSense color camera
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Environment=PYTHONPATH=%h/.local/share/wuji-cameras/vendor
+ExecStart=/usr/bin/python3 %h/.local/share/wuji-cameras/publish.py --camera %i
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=8
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target

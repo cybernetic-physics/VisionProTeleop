@@ -407,6 +407,7 @@ class WebRTCClient: NSObject, LKRTCPeerConnectionDelegate, @unchecked Sendable {
         self.peerConnection?.add(candidate)
     }
     
+    @MainActor
     private func connectToServer(host: String, port: Int) async throws {
         dlog("DEBUG: Attempting to connect to \(host):\(port)")
         await MainActor.run {
@@ -416,6 +417,12 @@ class WebRTCClient: NSObject, LKRTCPeerConnectionDelegate, @unchecked Sendable {
             host: host,
             port: port
         )
+        defer {
+            inputStream.close()
+            outputStream.close()
+            inputStream.remove(from: .main, forMode: .common)
+            outputStream.remove(from: .main, forMode: .common)
+        }
         dlog("DEBUG: Socket connection established to \(host):\(port)")
         await MainActor.run {
             DataManager.shared.connectionStatus = "Socket connected to \(host):\(port)"
@@ -578,6 +585,7 @@ class WebRTCClient: NSObject, LKRTCPeerConnectionDelegate, @unchecked Sendable {
     }
     
     func disconnect() {
+        Task { @MainActor in DataManager.shared.webRTCPeerConnected = false }
         peerConnection?.close()
         peerConnection = nil
         self.stopStatsTimer()
@@ -750,7 +758,8 @@ extension WebRTCClient {
     func peerConnection(_ peerConnection: LKRTCPeerConnection, didChange newState: LKRTCIceConnectionState) {
         dlog("DEBUG: ICE connection state changed to: \(newState.rawValue) (\(iceStateString(newState)))")
         Task { @MainActor in        
-            if newState == .connected {
+            DataManager.shared.webRTCPeerConnected = newState == .connected || newState == .completed
+            if newState == .connected || newState == .completed {
                  dlog("✅ [WebRTC] PeerConnection connected!")
                  self.onConnectionStateChanged?(true)
                  self.startStatsTimer()
@@ -1354,26 +1363,51 @@ actor AsyncSocketConnection {
             throw WebRTCError.connectionFailed
         }
         
-        input.schedule(in: .main, forMode: .default)
-        output.schedule(in: .main, forMode: .default)
+        input.schedule(in: .main, forMode: .common)
+        output.schedule(in: .main, forMode: .common)
         
         input.open()
         output.open()
         
-        // Wait for connection
-        try await Task.sleep(nanoseconds: 100_000_000) // 100ms
-        
-        return (input, output)
+        // Immersive interaction can keep the run loop outside its default mode.
+        // Wait for an actual open socket, and report refusals/permission errors.
+        let deadline = ContinuousClock.now.advanced(by: .seconds(8))
+        do {
+            while input.streamStatus != .open || output.streamStatus != .open {
+                try Task.checkCancellation()
+                if let error = input.streamError ?? output.streamError { throw error }
+                if input.streamStatus == .closed || output.streamStatus == .closed ||
+                    input.streamStatus == .atEnd || output.streamStatus == .atEnd {
+                    throw WebRTCError.connectionFailed
+                }
+                if ContinuousClock.now >= deadline { throw URLError(.timedOut) }
+                try await Task.sleep(nanoseconds: 10_000_000)
+            }
+            return (input, output)
+        } catch {
+            input.close()
+            output.close()
+            input.remove(from: .main, forMode: .common)
+            output.remove(from: .main, forMode: .common)
+            throw error
+        }
     }
 }
 
 extension InputStream {
+    @MainActor
     func readLine() async throws -> Data? {
         var buffer = Data()
-        let chunkSize = 1024
-        var chunk = [UInt8](repeating: 0, count: chunkSize)
-        
+        var chunk = [UInt8](repeating: 0, count: 1)
+        let deadline = ContinuousClock.now.advanced(by: .seconds(8))
         while true {
+            try Task.checkCancellation()
+            if let error = self.streamError { throw error }
+            if self.streamStatus == .atEnd || self.streamStatus == .closed {
+                return buffer.isEmpty ? nil : buffer
+            }
+            if ContinuousClock.now >= deadline { throw URLError(.timedOut) }
+            if buffer.count > 1_048_576 { throw WebRTCError.invalidOffer }
             guard self.hasBytesAvailable else {
                 try await Task.sleep(nanoseconds: 10_000_000) // 10ms
                 continue
@@ -1394,11 +1428,18 @@ extension InputStream {
 }
 
 extension OutputStream {
+    @MainActor
     func write(_ data: Data) async throws {
         let bytes = [UInt8](data)
         var totalWritten = 0
-        
+        let deadline = ContinuousClock.now.advanced(by: .seconds(8))
         while totalWritten < bytes.count {
+            try Task.checkCancellation()
+            if let error = self.streamError { throw error }
+            if self.streamStatus == .atEnd || self.streamStatus == .closed {
+                throw WebRTCError.connectionFailed
+            }
+            if ContinuousClock.now >= deadline { throw URLError(.timedOut) }
             guard self.hasSpaceAvailable else {
                 try await Task.sleep(nanoseconds: 10_000_000) // 10ms
                 continue

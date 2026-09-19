@@ -137,7 +137,10 @@ class VisionOSSettingsSync: ObservableObject {
         
         // Video plane settings
         if let value = store.object(forKey: SettingKey.videoPlaneZDistance.rawValue) as? Double {
-            dataManager.videoPlaneZDistance = Float(value)
+            // The iOS control stores a positive distance; RealityKit needs -Z.
+            if value.isFinite && value != 0 {
+                dataManager.videoPlaneZDistance = -abs(Float(value))
+            }
             settingsApplied = true
             dlog("☁️ [VisionOSSettingsSync] Applied videoPlaneZDistance = \(value)")
         }
@@ -208,7 +211,7 @@ class VisionOSSettingsSync: ObservableObject {
         store.set(Double(dataManager.handJointsOpacity), forKey: SettingKey.handJointsOpacity.rawValue)
         
         // Video plane settings
-        store.set(Double(dataManager.videoPlaneZDistance), forKey: SettingKey.videoPlaneZDistance.rawValue)
+        store.set(Double(abs(dataManager.videoPlaneZDistance)), forKey: SettingKey.videoPlaneZDistance.rawValue)
         store.set(Double(dataManager.videoPlaneYPosition), forKey: SettingKey.videoPlaneYPosition.rawValue)
         
         // Controller position settings

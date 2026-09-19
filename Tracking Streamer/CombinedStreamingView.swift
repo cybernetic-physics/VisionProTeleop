@@ -504,6 +504,7 @@ struct CombinedStreamingView: View {
                                     hasAudio = true
                                 }
                                 dlog("🎬 [CombinedStreamingView] First video frame received (source: \(isUVCMode ? "UVC" : "Network")), hasFrames=\(hasFrames)")
+                                dlog("🎬 [CombinedStreamingView] Video panel: z=\(dataManager.videoPlaneZDistance), y=\(dataManager.videoPlaneYPosition), scale=\(dataManager.videoPlaneScale), hidden=\(videoMinimized)")
                                 // Small delay to ensure state is fully committed
                                 try? await Task.sleep(nanoseconds: 100_000_000)  // 100ms
                                 dlog("🎬 [CombinedStreamingView] Checking auto-minimize after delay")

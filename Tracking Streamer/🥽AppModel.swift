@@ -354,13 +354,14 @@ class DataManager: ObservableObject {
     @Published var audioSampleRate: Int = 0
     
     @Published var connectionStatus: String = "Initializing..."
+    @Published var webRTCPeerConnected: Bool = false
     @Published var webRTCConnectionType: String = "" // Host, STUN, or TURN
     
     // Video plane z-distance setting (persistent via UserDefaults)
     @Published var videoPlaneZDistance: Float {
         didSet {
             UserDefaults.standard.set(videoPlaneZDistance, forKey: "videoPlaneZDistance")
-            syncSettingToiCloud("visionos.videoPlaneZDistance", value: Double(videoPlaneZDistance))
+            syncSettingToiCloud("visionos.videoPlaneZDistance", value: Double(abs(videoPlaneZDistance)))
         }
     }
     
@@ -487,10 +488,11 @@ class DataManager: ObservableObject {
         
         // Use local vars for checks to avoid accessing self before full init
         let savedZ = UserDefaults.standard.float(forKey: "videoPlaneZDistance")
-        self.videoPlaneZDistance = (savedZ == 0) ? 1.6 : savedZ
+        // RealityKit looks along -Z. Match the visible placement used by Reset.
+        self.videoPlaneZDistance = savedZ.isFinite && savedZ != 0 ? -abs(savedZ) : -10.0
         
-        let savedY = UserDefaults.standard.float(forKey: "videoPlaneYPosition")
-        self.videoPlaneYPosition = (savedY == 0) ? 1.5 : savedY
+        let savedY = UserDefaults.standard.object(forKey: "videoPlaneYPosition") as? NSNumber
+        self.videoPlaneYPosition = savedY?.floatValue ?? 0.0
         
         self.videoPlaneAutoPerpendicular = UserDefaults.standard.object(forKey: "videoPlaneAutoPerpendicular") as? Bool ?? true
         
