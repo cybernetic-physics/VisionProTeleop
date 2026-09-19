@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 project = 'VisionProTeleop'
 copyright = '2024, Younghyo Park'
 author = 'Younghyo Park'
-release = '2.0'
+release = '2.51.0'
 
 # -- General configuration ---------------------------------------------------
 extensions = [

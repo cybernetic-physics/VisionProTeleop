@@ -8,7 +8,6 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
-import Foundation
 import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
@@ -144,6 +143,146 @@ public struct Handtracking_HandUpdate: @unchecked Sendable {
   /// Clears the value of `head`. Subsequent reads from it will return its default value.
   public mutating func clearHead() {_uniqueStorage()._head = nil}
 
+  public var controllers: Handtracking_ControllerTracking {
+    get {return _storage._controllers ?? Handtracking_ControllerTracking()}
+    set {_uniqueStorage()._controllers = newValue}
+  }
+  /// Returns true if `controllers` has been explicitly set.
+  public var hasControllers: Bool {return _storage._controllers != nil}
+  /// Clears the value of `controllers`. Subsequent reads from it will return its default value.
+  public mutating func clearControllers() {_uniqueStorage()._controllers = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+/// Independent controller inputs. An inactive input is not a held/released value.
+public struct Handtracking_ControllerInput: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var name: String = String()
+
+  public var active: Bool = false
+
+  public var isBoolean: Bool = false
+
+  public var value: Float = 0
+
+  public var pressed: Bool = false
+
+  public var lastChangeTimeNs: UInt64 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Handtracking_ControllerState: @unchecked Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Runtime action activity, not a Bluetooth connection guarantee.
+  public var active: Bool {
+    get {return _storage._active}
+    set {_uniqueStorage()._active = newValue}
+  }
+
+  public var poseValid: Bool {
+    get {return _storage._poseValid}
+    set {_uniqueStorage()._poseValid = newValue}
+  }
+
+  /// Right-handed, meters, X right / Y up / -Z forward, in Surreal LOCAL space.
+  public var pose: Handtracking_Matrix4x4 {
+    get {return _storage._pose ?? Handtracking_Matrix4x4()}
+    set {_uniqueStorage()._pose = newValue}
+  }
+  /// Returns true if `pose` has been explicitly set.
+  public var hasPose: Bool {return _storage._pose != nil}
+  /// Clears the value of `pose`. Subsequent reads from it will return its default value.
+  public mutating func clearPose() {_uniqueStorage()._pose = nil}
+
+  public var inputs: [Handtracking_ControllerInput] {
+    get {return _storage._inputs}
+    set {_uniqueStorage()._inputs = newValue}
+  }
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+public struct Handtracking_ControllerTracking: @unchecked Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var version: UInt32 {
+    get {return _storage._version}
+    set {_uniqueStorage()._version = newValue}
+  }
+
+  public var enabled: Bool {
+    get {return _storage._enabled}
+    set {_uniqueStorage()._enabled = newValue}
+  }
+
+  public var timestampNs: UInt64 {
+    get {return _storage._timestampNs}
+    set {_uniqueStorage()._timestampNs = newValue}
+  }
+
+  public var sequence: UInt64 {
+    get {return _storage._sequence}
+    set {_uniqueStorage()._sequence = newValue}
+  }
+
+  public var left: Handtracking_ControllerState {
+    get {return _storage._left ?? Handtracking_ControllerState()}
+    set {_uniqueStorage()._left = newValue}
+  }
+  /// Returns true if `left` has been explicitly set.
+  public var hasLeft: Bool {return _storage._left != nil}
+  /// Clears the value of `left`. Subsequent reads from it will return its default value.
+  public mutating func clearLeft() {_uniqueStorage()._left = nil}
+
+  public var right: Handtracking_ControllerState {
+    get {return _storage._right ?? Handtracking_ControllerState()}
+    set {_uniqueStorage()._right = newValue}
+  }
+  /// Returns true if `right` has been explicitly set.
+  public var hasRight: Bool {return _storage._right != nil}
+  /// Clears the value of `right`. Subsequent reads from it will return its default value.
+  public mutating func clearRight() {_uniqueStorage()._right = nil}
+
+  /// Raw ARKit worldFromHead, queried at timestamp_ns. No Python head-axis offset.
+  public var headPose: Handtracking_Matrix4x4 {
+    get {return _storage._headPose ?? Handtracking_Matrix4x4()}
+    set {_uniqueStorage()._headPose = newValue}
+  }
+  /// Returns true if `headPose` has been explicitly set.
+  public var hasHeadPose: Bool {return _storage._headPose != nil}
+  /// Clears the value of `headPose`. Subsequent reads from it will return its default value.
+  public mutating func clearHeadPose() {_uniqueStorage()._headPose = nil}
+
+  public var headPoseValid: Bool {
+    get {return _storage._headPoseValid}
+    set {_uniqueStorage()._headPoseValid = newValue}
+  }
+
+  public var source: String {
+    get {return _storage._source}
+    set {_uniqueStorage()._source = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -170,27 +309,13 @@ fileprivate let _protobuf_package = "handtracking"
 
 extension Handtracking_Matrix4x4: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Matrix4x4"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "m00"),
-    2: .same(proto: "m01"),
-    3: .same(proto: "m02"),
-    4: .same(proto: "m03"),
-    5: .same(proto: "m10"),
-    6: .same(proto: "m11"),
-    7: .same(proto: "m12"),
-    8: .same(proto: "m13"),
-    9: .same(proto: "m20"),
-    10: .same(proto: "m21"),
-    11: .same(proto: "m22"),
-    12: .same(proto: "m23"),
-    13: .same(proto: "m30"),
-    14: .same(proto: "m31"),
-    15: .same(proto: "m32"),
-    16: .same(proto: "m33"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}m00\0\u{1}m01\0\u{1}m02\0\u{1}m03\0\u{1}m10\0\u{1}m11\0\u{1}m12\0\u{1}m13\0\u{1}m20\0\u{1}m21\0\u{1}m22\0\u{1}m23\0\u{1}m30\0\u{1}m31\0\u{1}m32\0\u{1}m33\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularFloatField(value: &self.m00) }()
       case 2: try { try decoder.decodeSingularFloatField(value: &self.m01) }()
@@ -214,52 +339,52 @@ extension Handtracking_Matrix4x4: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.m00 != 0 {
+    if self.m00.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m00, fieldNumber: 1)
     }
-    if self.m01 != 0 {
+    if self.m01.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m01, fieldNumber: 2)
     }
-    if self.m02 != 0 {
+    if self.m02.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m02, fieldNumber: 3)
     }
-    if self.m03 != 0 {
+    if self.m03.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m03, fieldNumber: 4)
     }
-    if self.m10 != 0 {
+    if self.m10.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m10, fieldNumber: 5)
     }
-    if self.m11 != 0 {
+    if self.m11.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m11, fieldNumber: 6)
     }
-    if self.m12 != 0 {
+    if self.m12.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m12, fieldNumber: 7)
     }
-    if self.m13 != 0 {
+    if self.m13.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m13, fieldNumber: 8)
     }
-    if self.m20 != 0 {
+    if self.m20.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m20, fieldNumber: 9)
     }
-    if self.m21 != 0 {
+    if self.m21.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m21, fieldNumber: 10)
     }
-    if self.m22 != 0 {
+    if self.m22.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m22, fieldNumber: 11)
     }
-    if self.m23 != 0 {
+    if self.m23.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m23, fieldNumber: 12)
     }
-    if self.m30 != 0 {
+    if self.m30.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m30, fieldNumber: 13)
     }
-    if self.m31 != 0 {
+    if self.m31.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m31, fieldNumber: 14)
     }
-    if self.m32 != 0 {
+    if self.m32.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m32, fieldNumber: 15)
     }
-    if self.m33 != 0 {
+    if self.m33.bitPattern != 0 {
       try visitor.visitSingularFloatField(value: self.m33, fieldNumber: 16)
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -289,12 +414,13 @@ extension Handtracking_Matrix4x4: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 
 extension Handtracking_Skeleton: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Skeleton"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "jointMatrices"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}jointMatrices\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeRepeatedMessageField(value: &self.jointMatrices) }()
       default: break
@@ -318,16 +444,17 @@ extension Handtracking_Skeleton: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
 extension Handtracking_Hand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Hand"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "wristMatrix"),
-    2: .same(proto: "skeleton"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}wristMatrix\0\u{1}skeleton\0")
 
   fileprivate class _StorageClass {
     var _wristMatrix: Handtracking_Matrix4x4? = nil
     var _skeleton: Handtracking_Skeleton? = nil
 
-    static let defaultInstance = _StorageClass()
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
 
     private init() {}
 
@@ -348,6 +475,9 @@ extension Handtracking_Hand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     _ = _uniqueStorage()
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
         case 1: try { try decoder.decodeSingularMessageField(value: &_storage._wristMatrix) }()
         case 2: try { try decoder.decodeSingularMessageField(value: &_storage._skeleton) }()
@@ -359,6 +489,10 @@ extension Handtracking_Hand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
       try { if let v = _storage._wristMatrix {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
       } }()
@@ -387,18 +521,19 @@ extension Handtracking_Hand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
 extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".HandUpdate"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "left_hand"),
-    2: .standard(proto: "right_hand"),
-    3: .same(proto: "Head"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}left_hand\0\u{3}right_hand\0\u{1}Head\0\u{1}controllers\0")
 
   fileprivate class _StorageClass {
     var _leftHand: Handtracking_Hand? = nil
     var _rightHand: Handtracking_Hand? = nil
     var _head: Handtracking_Matrix4x4? = nil
+    var _controllers: Handtracking_ControllerTracking? = nil
 
-    static let defaultInstance = _StorageClass()
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
 
     private init() {}
 
@@ -406,6 +541,7 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
       _leftHand = source._leftHand
       _rightHand = source._rightHand
       _head = source._head
+      _controllers = source._controllers
     }
   }
 
@@ -420,10 +556,14 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
     _ = _uniqueStorage()
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
         switch fieldNumber {
         case 1: try { try decoder.decodeSingularMessageField(value: &_storage._leftHand) }()
         case 2: try { try decoder.decodeSingularMessageField(value: &_storage._rightHand) }()
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._head) }()
+        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._controllers) }()
         default: break
         }
       }
@@ -432,6 +572,10 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
       try { if let v = _storage._leftHand {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
       } }()
@@ -440,6 +584,9 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
       } }()
       try { if let v = _storage._head {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      } }()
+      try { if let v = _storage._controllers {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
       } }()
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -453,6 +600,279 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
         if _storage._leftHand != rhs_storage._leftHand {return false}
         if _storage._rightHand != rhs_storage._rightHand {return false}
         if _storage._head != rhs_storage._head {return false}
+        if _storage._controllers != rhs_storage._controllers {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Handtracking_ControllerInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ControllerInput"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}active\0\u{3}is_boolean\0\u{1}value\0\u{1}pressed\0\u{3}last_change_time_ns\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.active) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self.isBoolean) }()
+      case 4: try { try decoder.decodeSingularFloatField(value: &self.value) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.pressed) }()
+      case 6: try { try decoder.decodeSingularUInt64Field(value: &self.lastChangeTimeNs) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 1)
+    }
+    if self.active != false {
+      try visitor.visitSingularBoolField(value: self.active, fieldNumber: 2)
+    }
+    if self.isBoolean != false {
+      try visitor.visitSingularBoolField(value: self.isBoolean, fieldNumber: 3)
+    }
+    if self.value.bitPattern != 0 {
+      try visitor.visitSingularFloatField(value: self.value, fieldNumber: 4)
+    }
+    if self.pressed != false {
+      try visitor.visitSingularBoolField(value: self.pressed, fieldNumber: 5)
+    }
+    if self.lastChangeTimeNs != 0 {
+      try visitor.visitSingularUInt64Field(value: self.lastChangeTimeNs, fieldNumber: 6)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Handtracking_ControllerInput, rhs: Handtracking_ControllerInput) -> Bool {
+    if lhs.name != rhs.name {return false}
+    if lhs.active != rhs.active {return false}
+    if lhs.isBoolean != rhs.isBoolean {return false}
+    if lhs.value != rhs.value {return false}
+    if lhs.pressed != rhs.pressed {return false}
+    if lhs.lastChangeTimeNs != rhs.lastChangeTimeNs {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Handtracking_ControllerState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ControllerState"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}active\0\u{3}pose_valid\0\u{1}pose\0\u{1}inputs\0")
+
+  fileprivate class _StorageClass {
+    var _active: Bool = false
+    var _poseValid: Bool = false
+    var _pose: Handtracking_Matrix4x4? = nil
+    var _inputs: [Handtracking_ControllerInput] = []
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _active = source._active
+      _poseValid = source._poseValid
+      _pose = source._pose
+      _inputs = source._inputs
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularBoolField(value: &_storage._active) }()
+        case 2: try { try decoder.decodeSingularBoolField(value: &_storage._poseValid) }()
+        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._pose) }()
+        case 4: try { try decoder.decodeRepeatedMessageField(value: &_storage._inputs) }()
+        default: break
+        }
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      if _storage._active != false {
+        try visitor.visitSingularBoolField(value: _storage._active, fieldNumber: 1)
+      }
+      if _storage._poseValid != false {
+        try visitor.visitSingularBoolField(value: _storage._poseValid, fieldNumber: 2)
+      }
+      try { if let v = _storage._pose {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      } }()
+      if !_storage._inputs.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._inputs, fieldNumber: 4)
+      }
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Handtracking_ControllerState, rhs: Handtracking_ControllerState) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._active != rhs_storage._active {return false}
+        if _storage._poseValid != rhs_storage._poseValid {return false}
+        if _storage._pose != rhs_storage._pose {return false}
+        if _storage._inputs != rhs_storage._inputs {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Handtracking_ControllerTracking: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ControllerTracking"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}version\0\u{1}enabled\0\u{3}timestamp_ns\0\u{1}sequence\0\u{1}left\0\u{1}right\0\u{3}head_pose\0\u{3}head_pose_valid\0\u{1}source\0")
+
+  fileprivate class _StorageClass {
+    var _version: UInt32 = 0
+    var _enabled: Bool = false
+    var _timestampNs: UInt64 = 0
+    var _sequence: UInt64 = 0
+    var _left: Handtracking_ControllerState? = nil
+    var _right: Handtracking_ControllerState? = nil
+    var _headPose: Handtracking_Matrix4x4? = nil
+    var _headPoseValid: Bool = false
+    var _source: String = String()
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _version = source._version
+      _enabled = source._enabled
+      _timestampNs = source._timestampNs
+      _sequence = source._sequence
+      _left = source._left
+      _right = source._right
+      _headPose = source._headPose
+      _headPoseValid = source._headPoseValid
+      _source = source._source
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularUInt32Field(value: &_storage._version) }()
+        case 2: try { try decoder.decodeSingularBoolField(value: &_storage._enabled) }()
+        case 3: try { try decoder.decodeSingularUInt64Field(value: &_storage._timestampNs) }()
+        case 4: try { try decoder.decodeSingularUInt64Field(value: &_storage._sequence) }()
+        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._left) }()
+        case 6: try { try decoder.decodeSingularMessageField(value: &_storage._right) }()
+        case 7: try { try decoder.decodeSingularMessageField(value: &_storage._headPose) }()
+        case 8: try { try decoder.decodeSingularBoolField(value: &_storage._headPoseValid) }()
+        case 9: try { try decoder.decodeSingularStringField(value: &_storage._source) }()
+        default: break
+        }
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      if _storage._version != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._version, fieldNumber: 1)
+      }
+      if _storage._enabled != false {
+        try visitor.visitSingularBoolField(value: _storage._enabled, fieldNumber: 2)
+      }
+      if _storage._timestampNs != 0 {
+        try visitor.visitSingularUInt64Field(value: _storage._timestampNs, fieldNumber: 3)
+      }
+      if _storage._sequence != 0 {
+        try visitor.visitSingularUInt64Field(value: _storage._sequence, fieldNumber: 4)
+      }
+      try { if let v = _storage._left {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      } }()
+      try { if let v = _storage._right {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+      } }()
+      try { if let v = _storage._headPose {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+      } }()
+      if _storage._headPoseValid != false {
+        try visitor.visitSingularBoolField(value: _storage._headPoseValid, fieldNumber: 8)
+      }
+      if !_storage._source.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._source, fieldNumber: 9)
+      }
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Handtracking_ControllerTracking, rhs: Handtracking_ControllerTracking) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._version != rhs_storage._version {return false}
+        if _storage._enabled != rhs_storage._enabled {return false}
+        if _storage._timestampNs != rhs_storage._timestampNs {return false}
+        if _storage._sequence != rhs_storage._sequence {return false}
+        if _storage._left != rhs_storage._left {return false}
+        if _storage._right != rhs_storage._right {return false}
+        if _storage._headPose != rhs_storage._headPose {return false}
+        if _storage._headPoseValid != rhs_storage._headPoseValid {return false}
+        if _storage._source != rhs_storage._source {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -464,12 +884,13 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension Handtracking_HandUpdateAck: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".HandUpdateAck"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "message"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}message\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.message) }()
       default: break

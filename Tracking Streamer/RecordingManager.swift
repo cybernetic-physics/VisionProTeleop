@@ -24,6 +24,8 @@ struct RecordedFrame: Codable {
     let videoFrameIndex: Int  // Index into video frames
     let videoWidth: Int
     let videoHeight: Int
+    // Codable stores protobuf bytes as base64; old recordings omit this optional field.
+    var controllerTracking: Data? = nil
 }
 
 /// A single frame of simulation data
@@ -614,6 +616,7 @@ class RecordingManager: ObservableObject {
         
         // Capture the LATEST tracking data at this moment
         let trackingData = DataManager.shared.latestHandTrackingData
+        let controllerTracking = try? SurrealControllerManager.snapshots.snapshot().serializedData()
         
         // Get image dimensions
         let width = Int(videoFrame.size.width)
@@ -695,7 +698,8 @@ class RecordingManager: ObservableObject {
                 rightHand: rightHand,
                 videoFrameIndex: frameIndex,
                 videoWidth: width,
-                videoHeight: height
+                videoHeight: height,
+                controllerTracking: controllerTracking
             )
             
             // Append to tracking data array
@@ -738,6 +742,7 @@ class RecordingManager: ObservableObject {
         
         // Capture the latest tracking data
         let trackingData = DataManager.shared.latestHandTrackingData
+        let controllerTracking = try? SurrealControllerManager.snapshots.snapshot().serializedData()
         
         recordingQueue.async { [weak self] in
             guard let self = self else { return }
@@ -772,7 +777,8 @@ class RecordingManager: ObservableObject {
                 rightHand: rightHand,
                 videoFrameIndex: -1,  // No video frame
                 videoWidth: 0,
-                videoHeight: 0
+                videoHeight: 0,
+                controllerTracking: controllerTracking
             )
             
             self.recordedFrames.append(recordedFrame)
@@ -823,6 +829,7 @@ class RecordingManager: ObservableObject {
         guard isRecording, let startTime = recordingStartTime else { return }
         
         let relativeTimestamp = timestamp - startTime.timeIntervalSince1970
+        let controllerTracking = try? SurrealControllerManager.snapshots.snapshot().serializedData()
         
         // Prepare tracking data if available
         var headMatrixArray: [Float]? = nil
@@ -857,7 +864,8 @@ class RecordingManager: ObservableObject {
                     rightHand: rightHand,
                     videoFrameIndex: -1,  // No video frame for simulation-only recordings
                     videoWidth: 0,
-                    videoHeight: 0
+                    videoHeight: 0,
+                controllerTracking: controllerTracking
                 )
                 self.recordedFrames.append(recordedFrame)
             }

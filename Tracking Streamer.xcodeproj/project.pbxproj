@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+        A91C00000000000000000006 /* SurrealTouch-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = A91C00000000000000000007; };
+        A91C00000000000000000001 /* SurrealControllerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91C00000000000000000002; };
+        A91C00000000000000000003 /* openxr-framework in Frameworks */ = {isa = PBXBuildFile; productRef = A91C00000000000000000004; };
 		160ED7982B4B74C5002AD987 /* 🧑HeadTrackingComponent&System.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160ED7972B4B74C5002AD987 /* 🧑HeadTrackingComponent&System.swift */; };
 		16253CFB2B4E2FCB0028F0E2 /* 📏Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16253CFA2B4E2FCB0028F0E2 /* 📏Unit.swift */; };
 		16267B502B57D172000CA8AD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 16267B4F2B57D172000CA8AD /* Localizable.xcstrings */; };
@@ -85,6 +88,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+        A91C00000000000000000007 /* SurrealTouch-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SurrealTouch-LICENSE.txt"; sourceTree = "<group>"; };
+        A91C00000000000000000002 /* SurrealControllerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurrealControllerManager.swift; sourceTree = "<group>"; };
 		160ED7972B4B74C5002AD987 /* 🧑HeadTrackingComponent&System.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "🧑HeadTrackingComponent&System.swift"; sourceTree = "<group>"; };
 		160F46BB2B5A57AF001FE696 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		160F46BC2B5A57D4001FE696 /* appstore_badge.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = appstore_badge.svg; sourceTree = "<group>"; };
@@ -163,6 +168,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+                A91C00000000000000000003 /* openxr-framework in Frameworks */,
 				C14DAF532B7C375D00A7333E /* GRPCCore in Frameworks */,
 				C14DAF632B7C375D00A7333E /* GRPCNIOTransportHTTP2 in Frameworks */,
 				C14DAF732B7C375D00A7333E /* GRPCProtobuf in Frameworks */,
@@ -198,6 +204,7 @@
 		16267B4E2B57D148000CA8AD /* Supporting files */ = {
 			isa = PBXGroup;
 			children = (
+                A91C00000000000000000007 /* SurrealTouch-LICENSE.txt */,
 				C1DA80D92ED0F4C500B55CC2 /* RealityKitContent */,
 				165ADB522B4B71B2008A756F /* Assets.xcassets */,
 				169D84AE2B5A319400BB5606 /* sound1.m4a */,
@@ -252,6 +259,7 @@
 				C1E05F792ECD850B0018C506 /* ImageData.swift */,
 				C1EAF9762ED7EC9000549580 /* CombinedStreamingView.swift */,
 				C1C7672E2EF1F0E20020844F /* AccessoryTrackingManager.swift */,
+                A91C00000000000000000002 /* SurrealControllerManager.swift */,
 				C1C767302EF220010020844F /* SignalingClient.swift */,
 				C1E05F7A2ECD850B0018C506 /* ImmersiveView.swift */,
 				C1E05F7B2ECD850B0018C506 /* WebRTCClient.swift */,
@@ -355,6 +363,7 @@
 			);
 			name = "Tracking Streamer";
 			packageProductDependencies = (
+                A91C00000000000000000004 /* openxr-framework */,
 				C14DAF522B7C375D00A7333E /* GRPCCore */,
 				C14DAF622B7C375D00A7333E /* GRPCNIOTransportHTTP2 */,
 				C14DAF722B7C375D00A7333E /* GRPCProtobuf */,
@@ -416,6 +425,7 @@
 			);
 			mainGroup = 165ADB3E2B4B71B0008A756F;
 			packageReferences = (
+                A91C00000000000000000005 /* SwiftSDKBinary */,
 				C14DAF512B7C375D00A7333E /* XCRemoteSwiftPackageReference "grpc-swift-2" */,
 				C14DAF612B7C375D00A7333E /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */,
 				C14DAF712B7C375D00A7333E /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */,
@@ -437,6 +447,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+                A91C00000000000000000006 /* SurrealTouch-LICENSE.txt in Resources */,
 				169D84B02B5A319500BB5606 /* sound1.m4a in Resources */,
 				169D84AF2B5A319500BB5606 /* sound2.m4a in Resources */,
 				16EA6A612B68629100A3A740 /* screenshot1280w3.jpg in Resources */,
@@ -461,6 +472,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+                A91C00000000000000000001 /* SurrealControllerManager.swift in Sources */,
 				C1B671552EE3383A00574B6F /* VisionOSSettingsSync.swift in Sources */,
 				16EE5E992B576DA800D354ED /* 🧩Name.swift in Sources */,
 				C1EAFA392EDD2EA600549580 /* ExtrinsicCalibrationView.swift in Sources */,
@@ -652,7 +664,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Tracking Streamer/VisionProTeleop.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = ATTMC2WVK2;
 				ENABLE_PREVIEWS = YES;
@@ -671,6 +683,8 @@
 				);
 				MARKETING_VERSION = 2.51;
 				PRODUCT_BUNDLE_IDENTIFIER = improbable.younghyo.DexTeleop2;
+                DEAD_CODE_STRIPPING = YES;
+                OTHER_LDFLAGS = ("$(inherited)", "-lc++");
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
@@ -678,7 +692,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Tracking Streamer/Tracking Streamer-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 2.1;
+				XROS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Debug;
 		};
@@ -691,7 +705,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Tracking Streamer/VisionProTeleop.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = ATTMC2WVK2;
 				ENABLE_PREVIEWS = YES;
@@ -710,6 +724,8 @@
 				);
 				MARKETING_VERSION = 2.51;
 				PRODUCT_BUNDLE_IDENTIFIER = improbable.younghyo.DexTeleop2;
+                DEAD_CODE_STRIPPING = YES;
+                OTHER_LDFLAGS = ("$(inherited)", "-lc++");
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "xros xrsimulator";
@@ -717,7 +733,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Tracking Streamer/Tracking Streamer-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 2.1;
+				XROS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Release;
 		};
@@ -849,6 +865,11 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+        A91C00000000000000000005 /* SwiftSDKBinary */ = {
+            isa = XCRemoteSwiftPackageReference;
+            repositoryURL = "https://github.com/surreal-interactive/SwiftSDKBinary.git";
+            requirement = {kind = revision; revision = a42deb007c7f12afb543b235b75464e86e00125a; };
+        };
 		C14DAF512B7C375D00A7333E /* XCRemoteSwiftPackageReference "grpc-swift-2" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/grpc/grpc-swift-2.git";
@@ -875,7 +896,7 @@
 		};
 		C1E05F762ECD84DF0018C506 /* XCRemoteSwiftPackageReference "webrtc-xcframework" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:livekit/webrtc-xcframework.git";
+			repositoryURL = "https://github.com/livekit/webrtc-xcframework.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 137.7151.10;
@@ -884,6 +905,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+        A91C00000000000000000004 /* openxr-framework */ = {isa = XCSwiftPackageProductDependency; package = A91C00000000000000000005; productName = "openxr-framework"; };
 		C14DAF522B7C375D00A7333E /* GRPCCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C14DAF512B7C375D00A7333E /* XCRemoteSwiftPackageReference "grpc-swift-2" */;

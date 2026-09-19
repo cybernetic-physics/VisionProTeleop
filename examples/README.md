@@ -1,6 +1,15 @@
 # VisionProTeleop with Video Streaming:  Examples
 
 
+## Surreal Touch controller diagnostic
+
+After building this fork’s Vision Pro app and installing its Python package, run:
+
+```bash
+python examples/17_surreal_touch.py --ip 192.168.1.100
+```
+
+Run from the repository root and replace the IP with your headset’s address (or room code). [17_surreal_touch.py](17_surreal_touch.py) prints each controller’s head-relative XYZ, face/menu/stick buttons, triggers, grips, and stick axes independently of hand tracking. It does not drive a robot. See [pairing, permissions, alignment, and hardware checks](../docs/surreal_touch.md).
 
 ## Feature Comparison
 

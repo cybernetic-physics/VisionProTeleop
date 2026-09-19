@@ -7,3 +7,9 @@ build/
 avp_stream/datasets/eckey.pem
 *.pem
 downloads/
+# Local development state
+.venv/
+__pycache__/
+.pytest_cache/
+.DS_Store
+xcuserdata/

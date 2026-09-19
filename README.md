@@ -1,6 +1,6 @@
 <!-- omit in toc -->
-VisionProTeleop
-===========
+VisionProTeleop + Surreal Touch
+==============================
 
 <div align="center">
   <img width="340" src="assets/vptv2.png">
@@ -17,18 +17,22 @@ VisionProTeleop
   </a>
 </p>
 
-A complete ecosystem for using Apple Vision Pro in robotics research — from **real-world teleoperation** to **simulation teleoperation** to **egocentric dataset recording**. Stream hand/head tracking from Vision Pro, send video/audio/simulation back, and record everything to the cloud.
+Cybernetic Physics’ fork of [Improbable-AI/VisionProTeleop](https://github.com/Improbable-AI/VisionProTeleop), adding **native Surreal Touch controller tracking** to the Vision Pro app and Python SDK. Stream each controller’s position, orientation, buttons, triggers, grips, and thumbsticks independently of the hand skeletons, alongside the original video, simulation, and recording features.
 
-> **For a more detailed explanation, check out this short [paper](./assets/short_paper_new.pdf).**
+**Use the app built from this fork and install its Python package from source.** The upstream App Store app and PyPI package are separate distributions; installing those alone does not install this controller integration. This fork identifies its SDK as `avp_stream` 2.51.0; no PyPI release is implied.
 
-> The recently updated App Store version of Tracking Streamer requires python library `avp_stream` over 2.50.0. It will show a warning message on the VisionOS side if the python library is outdated. You can upgrade the library by running `pip install --upgrade avp_stream`. 
+**Validation:** device and ARM64 simulator builds and 35 controller tests passed. Real-controller Bluetooth behavior, tracking accuracy, and alignment between the controller and headset origins still require hardware validation. Head-relative poses currently assume the vendor’s LOCAL origin matches ARKit world space; a measured alignment correction is supported.
 
+Start with [Surreal Touch setup and API](docs/surreal_touch.md), [installing on a real Vision Pro](docs/how_to_install.md), or the [controller diagnostic](examples/17_surreal_touch.py).
+
+The upstream project supports real-world and simulation teleoperation, camera/audio streaming, and egocentric recording. Its [paper](assets/short_paper_new.pdf), attribution, and citation are retained below.
 
 <!-- omit in toc -->
 ## Table of Contents
 
 - [Overview](#overview)
 - [Installations](#installations)
+- [Surreal Touch controllers](#surreal-touch-controllers)
 - [External Network (Remote) Mode 🆕](#external-network-remote-mode-)
   - [How It Works](#how-it-works)
   - [Usage](#usage)
@@ -70,7 +74,7 @@ A complete ecosystem for using Apple Vision Pro in robotics research — from **
 This project provides:
 
 1. **Tracking Streamer**: A **VisionOS** app that 
-    - streams hand/head tracking data *to* Python client
+    - streams hand/head tracking and independent Surreal Touch controller data *to* Python client
     - receive stereo/mono video/audio streams *from* Python client
     - present simulation scenes (MuJoCo and Isaac Lab) and its updates with native AR rendering using RealityKit
     - record egocentric video with hand tracking with arbitrary UVC camera connected to Vision Pro
@@ -121,16 +125,27 @@ Together, they enable three major workflows for robotics research:
 ---
 ## Installations
 
-Installing is easy: install it from the App Store and PyPI. 
-| Component | Installation |
-|-----------|-------------|
-| **Tracking Streamer** (VisionOS) | Install from [App Store](https://apps.apple.com/us/app/tracking-streamer/id6478969032) |
-| **Tracking Manager** (iOS) | Install from [App Store](https://apps.apple.com/app/tracking-manager) |
-| **avp_stream** (Python) | `pip install --upgrade avp_stream` |
+Clone this fork and install the matching Python SDK in a virtual environment:
 
-No other network configurations are required. Everything should work out of the box after installation. An easy way to get onboarded is to go through the [examples](examples/) folder. All examples should work out of the box without any extra configurations required. 
+```bash
+git clone https://github.com/cybernetic-physics/VisionProTeleop.git
+cd VisionProTeleop
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
+```
 
-**Note**: Some examples demonstrate teleoperating things within IsaacLab world; since IsaacLab is an extremely heavy dependency, I did not include that as a dependency for `avp_stream`. If you're trying to run examples including IsaacLab as a simulation backend, you should install things according to their official installation guide. 
+Open `Tracking Streamer.xcodeproj` in Xcode, choose the **VisionProTeleop** scheme, configure your signing team and bundle identifier, and run it on your paired Vision Pro. Follow the [device installation guide](docs/how_to_install.md) for signing, permissions, and wireless pairing. A Developer Strap is optional for wireless installation and testing.
+
+Pair both controllers in the headset’s **Settings → Bluetooth**, press **START** in the app, and open **Settings → Surreal Touch**. With the headset and Python client on the same local network, run:
+
+```bash
+python examples/17_surreal_touch.py --ip 192.168.1.100
+```
+
+Replace the address with the IP shown in your headset app. The diagnostic prints inputs and head-relative positions; it does not command a robot. See the [controller guide](docs/surreal_touch.md) for room-code connections, calibration, and troubleshooting.
+
+The upstream [Tracking Streamer App Store listing](https://apps.apple.com/us/app/tracking-streamer/id6478969032) and [PyPI package](https://pypi.org/project/avp_stream/) remain available for upstream functionality. Use this fork’s source builds for Surreal Touch. Isaac Lab examples additionally require an independently installed Isaac Lab environment.
 
 ---
 
@@ -479,6 +494,40 @@ The **Tracking Streamer** VisionOS app includes a settings panel (tap the gear i
 These settings persist across sessions and can also be configured remotely via the **Tracking Manager** iOS companion app.
 
 ---
+
+## Surreal Touch controllers
+
+The app reads the vendor’s native OpenXR interface and sends dedicated left/right controller channels over gRPC and WebRTC. Neither controller’s inputs are synthesized from hand pinches. Hand data remains available through the existing API. Unity and SteamVR are not required.
+
+| Input | Left controller | Right controller |
+|---|---|---|
+| Face buttons | X, Y | A, B |
+| Menu and thumbstick click | Independent booleans | Independent booleans |
+| Trigger and grip | Analog 0–1 and derived press | Analog 0–1 and derived press |
+| Thumbstick | X/Y axes, −1 to 1 | X/Y axes, −1 to 1 |
+| Grip pose | Position and orientation | Position and orientation |
+
+These are the controls exposed by the integrated vendor API; OS-reserved buttons and unavailable capacitive signals are not fabricated.
+
+```python
+from avp_stream import VisionProStreamer
+
+streamer = VisionProStreamer(ip="192.168.1.100")
+# Read repeatedly after streaming starts; the first snapshot may be unavailable.
+controllers = streamer.get_controllers()
+left = controllers["left"]
+right = controllers["right"]
+if not controllers["stale"] and left["pose_head"] is not None:
+    left_xyz_m = left["pose_head"][:3, 3]
+a_pressed = right["buttons"]["a"]  # True / False / None (unavailable)
+left_grip = left["axes"]["grip"]   # 0..1 / None
+```
+
+`pose_head` is a 4×4 transform relative to the **current headset position and orientation**: X right, Y up, −Z forward, in meters. It is calculated as `inverse(head_world) @ alignment @ controller_local`. The default alignment is identity and must be verified on hardware; use `set_controller_origin()` for a measured correction. This is not a fixed initial head root or a yaw-only body root.
+
+Unavailable poses/inputs return `None`; live snapshots expire after 250 ms by default. Buttons can remain valid when a pose is unavailable. The vendor may request hand tracking for its own calibration even though our controller data channels are separate from hands.
+
+See the [complete setup, API, alignment, and hardware test guide](docs/surreal_touch.md).
 
 ## API Reference
 

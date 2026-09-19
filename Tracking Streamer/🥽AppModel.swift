@@ -568,7 +568,12 @@ extension 🥽AppModel {
         Task {
             @MainActor in
             do {
-                try await self.session.run([self.handTracking, self.worldTracking, self.sceneReconstruction])
+                // Head/controller streaming must still work when hand tracking is denied.
+                let authorization = await self.session.requestAuthorization(for: [.handTracking, .worldSensing])
+                var providers: [any DataProvider] = [self.worldTracking]
+                if authorization[.handTracking] == .allowed { providers.append(self.handTracking) }
+                if authorization[.worldSensing] == .allowed { providers.append(self.sceneReconstruction) }
+                try await self.session.run(providers)
                 // Use predictive hand tracking with handAnchors(at:) for lower latency
                 // This polls at 120Hz and queries predicted poses at a future timestamp
                 await self.processHandTrackingPredictive()
@@ -606,6 +611,16 @@ extension 🥽AppModel {
             }
             
             await function()
+        }
+    }
+
+    @MainActor
+    func processControllerUpdates() async {
+        await SurrealControllerManager.shared.run { [weak self] timestamp in
+            guard let self, self.worldTracking.state == .running,
+                  let anchor = self.worldTracking.queryDeviceAnchor(atTimestamp: timestamp),
+                  anchor.isTracked else { return nil }
+            return anchor.originFromAnchorTransform
         }
     }
 
@@ -760,6 +775,7 @@ func fill_handUpdate() -> Handtracking_HandUpdate {
     handUpdate.leftHand.wristMatrix = createMatrix4x4(from: leftWrist)
     handUpdate.rightHand.wristMatrix = createMatrix4x4(from: rightWrist)
     handUpdate.head = createMatrix4x4(from: Head)
+    handUpdate.controllers = SurrealControllerManager.snapshots.snapshot()
     
     // Fill left hand joints
     for (index, jointMatrix) in leftJoints.enumerated() {

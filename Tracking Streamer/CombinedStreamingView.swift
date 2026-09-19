@@ -2608,6 +2608,7 @@ private struct VideoSourceModifiers: ViewModifier {
 
 /// Lifecycle modifiers (task, onAppear)
 private struct LifecycleModifiers: ViewModifier {
+    @Environment(\.scenePhase) private var scenePhase
     @ObservedObject var dataManager: DataManager
     @ObservedObject var appModel: 🥽AppModel
     @ObservedObject var videoStreamManager: VideoStreamManager
@@ -2636,6 +2637,10 @@ private struct LifecycleModifiers: ViewModifier {
         content
             .task { appModel.run() }
             .task { await appModel.processDeviceAnchorUpdates() }
+            .task { await appModel.processControllerUpdates() }
+            .onChange(of: scenePhase) { _, phase in
+                SurrealControllerManager.shared.isForeground = phase == .active
+            }
             .task(priority: .low) { await appModel.processReconstructionUpdates() }
             .onAppear { handleOnAppear() }
     }
@@ -2643,6 +2648,7 @@ private struct LifecycleModifiers: ViewModifier {
     private func handleOnAppear() {
         dlog("🚀 [CombinedStreamingView] View appeared, starting services")
         
+        SurrealControllerManager.shared.isForeground = scenePhase == .active
         hasAutoMinimized = false
         userInteracted = false
         hasFrames = false

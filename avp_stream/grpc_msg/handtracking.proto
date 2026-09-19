@@ -38,6 +38,39 @@ message HandUpdate {
   Hand left_hand = 1;
   Hand right_hand = 2;
   Matrix4x4 Head = 3; 
+  ControllerTracking controllers = 4;
+}
+
+// Independent controller inputs. An inactive input is not a held/released value.
+message ControllerInput {
+  string name = 1;
+  bool active = 2;
+  bool is_boolean = 3;
+  float value = 4;
+  bool pressed = 5;
+  uint64 last_change_time_ns = 6;
+}
+
+message ControllerState {
+  // Runtime action activity, not a Bluetooth connection guarantee.
+  bool active = 1;
+  bool pose_valid = 2;
+  // Right-handed, meters, X right / Y up / -Z forward, in Surreal LOCAL space.
+  Matrix4x4 pose = 3;
+  repeated ControllerInput inputs = 4;
+}
+
+message ControllerTracking {
+  uint32 version = 1;
+  bool enabled = 2;
+  uint64 timestamp_ns = 3;
+  uint64 sequence = 4;
+  ControllerState left = 5;
+  ControllerState right = 6;
+  // Raw ARKit worldFromHead, queried at timestamp_ns. No Python head-axis offset.
+  Matrix4x4 head_pose = 7;
+  bool head_pose_valid = 8;
+  string source = 9;
 }
 
 // The hand tracking service definition.

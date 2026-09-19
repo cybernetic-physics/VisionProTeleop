@@ -7,21 +7,30 @@ VisionProTeleop Documentation
 
 |
 
-Welcome to VisionProTeleop's documentation! This VisionOS app and Python library streams your Head + Wrist + Hand Tracking result via gRPC over a WiFi network, enabling any robots connected to the same WiFi network to subscribe and use the data. **It can also stream stereo (or mono) camera feeds from your robot back to the Vision Pro.**
+This is Cybernetic Physics’ fork of VisionProTeleop, adding native **Surreal Touch**
+controller poses and independent buttons, triggers, grips, and thumbsticks to the
+Vision Pro app and Python SDK. Existing hand/head tracking, video streaming,
+simulation, and recording remain available.
 
 .. note::
-   🎉 **UPDATE:** Now supporting Low-Latency Video Streaming! You can now stream back your robot's camera feed to Vision Pro via WebRTC protocol, alongside the original hand tracking data stream.
+   Use this fork’s app and SDK source builds for controller support. Upstream
+   App Store and PyPI distributions are separate. Device/simulator builds and
+   automated controller tests passed; real-controller tracking and headset-origin
+   alignment still require hardware validation.
 
 Installation
 ------------
 
-Install the Python package:
-
 .. code-block:: bash
 
-   pip install --upgrade avp_stream
+   git clone https://github.com/cybernetic-physics/VisionProTeleop.git
+   cd VisionProTeleop
+   python3 -m venv .venv
+   source .venv/bin/activate
+   python -m pip install -e .
 
-For Vision Pro app installation, search for **Tracking Streamer** on the VisionOS App Store.
+Build the **VisionProTeleop** scheme from ``Tracking Streamer.xcodeproj`` and run
+it on your paired Vision Pro. See :doc:`installation` and :doc:`surreal_touch`.
 
 Quick Start
 -----------
@@ -63,6 +72,7 @@ Contents
    :caption: User Guide
 
    installation
+   surreal_touch
    quickstart
 
 .. toctree::
