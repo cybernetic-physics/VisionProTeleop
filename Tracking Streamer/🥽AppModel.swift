@@ -31,6 +31,27 @@ final class OpticalHandSnapshotStore: @unchecked Sendable {
     private var left = Handtracking_Hand()
     private var right = Handtracking_Hand()
     private var sequence: UInt64 = 0
+    private var trackingSessionID = UUID().uuidString
+    private var headWasTracked = false
+
+    func resetSession() {
+        lock.lock()
+        defer { lock.unlock() }
+        trackingSessionID = UUID().uuidString
+        headWasTracked = false
+        left = Handtracking_Hand()
+        right = Handtracking_Hand()
+    }
+
+    func sessionID(headTracked: Bool) -> String {
+        lock.lock()
+        defer { lock.unlock() }
+        if headTracked != headWasTracked {
+            trackingSessionID = UUID().uuidString
+            headWasTracked = headTracked
+        }
+        return trackingSessionID
+    }
     private var prediction: TimeInterval = 0.033
     private var displayPose = HandTrackingData()
 
@@ -636,6 +657,7 @@ extension 🥽AppModel {
                 var providers: [any DataProvider] = [self.worldTracking]
                 if authorization[.handTracking] == .allowed { providers.append(self.handTracking) }
                 if authorization[.worldSensing] == .allowed { providers.append(self.sceneReconstruction) }
+                OpticalHandSnapshotStore.shared.resetSession()
                 try await self.session.run(providers)
                 // Use predictive hand tracking with handAnchors(at:) for lower latency
                 // This polls at 120Hz and queries predicted poses at a future timestamp
@@ -847,6 +869,9 @@ func fill_handUpdate() -> Handtracking_HandUpdate {
     handUpdate.rightHand = right
     handUpdate.head = createMatrix4x4(from: DataManager.shared.latestHandTrackingData.Head)
     handUpdate.controllers = SurrealControllerManager.snapshots.snapshot()
+    handUpdate.trackingMetadataVersion = 1
+    handUpdate.trackingSessionID = OpticalHandSnapshotStore.shared.sessionID(
+        headTracked: handUpdate.controllers.headPoseValid)
 
     // MARKER DETECTION: Append detected markers as additional matrices in right hand skeleton
     // Format: After normal 27 joints, append:

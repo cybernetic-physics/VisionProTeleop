@@ -189,6 +189,18 @@ public struct Handtracking_HandUpdate: @unchecked Sendable {
     set {_uniqueStorage()._timestampNs = newValue}
   }
 
+  /// Changes on AR session restart and head tracking loss/relocalization.
+  public var trackingSessionID: String {
+    get {return _storage._trackingSessionID}
+    set {_uniqueStorage()._trackingSessionID = newValue}
+  }
+
+  /// 1: session identity and optical validity
+  public var trackingMetadataVersion: UInt32 {
+    get {return _storage._trackingMetadataVersion}
+    set {_uniqueStorage()._trackingMetadataVersion = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -819,7 +831,7 @@ extension Handtracking_Hand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
 extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".HandUpdate"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}left_hand\0\u{3}right_hand\0\u{1}Head\0\u{1}controllers\0\u{3}timestamp_ns\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}left_hand\0\u{3}right_hand\0\u{1}Head\0\u{1}controllers\0\u{3}timestamp_ns\0\u{3}tracking_session_id\0\u{3}tracking_metadata_version\0")
 
   fileprivate class _StorageClass {
     var _leftHand: Handtracking_Hand? = nil
@@ -827,6 +839,8 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
     var _head: Handtracking_Matrix4x4? = nil
     var _controllers: Handtracking_ControllerTracking? = nil
     var _timestampNs: UInt64 = 0
+    var _trackingSessionID: String = String()
+    var _trackingMetadataVersion: UInt32 = 0
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -842,6 +856,8 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
       _head = source._head
       _controllers = source._controllers
       _timestampNs = source._timestampNs
+      _trackingSessionID = source._trackingSessionID
+      _trackingMetadataVersion = source._trackingMetadataVersion
     }
   }
 
@@ -865,6 +881,8 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._head) }()
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._controllers) }()
         case 5: try { try decoder.decodeSingularUInt64Field(value: &_storage._timestampNs) }()
+        case 6: try { try decoder.decodeSingularStringField(value: &_storage._trackingSessionID) }()
+        case 7: try { try decoder.decodeSingularUInt32Field(value: &_storage._trackingMetadataVersion) }()
         default: break
         }
       }
@@ -892,6 +910,12 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
       if _storage._timestampNs != 0 {
         try visitor.visitSingularUInt64Field(value: _storage._timestampNs, fieldNumber: 5)
       }
+      if !_storage._trackingSessionID.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._trackingSessionID, fieldNumber: 6)
+      }
+      if _storage._trackingMetadataVersion != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._trackingMetadataVersion, fieldNumber: 7)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -906,6 +930,8 @@ extension Handtracking_HandUpdate: SwiftProtobuf.Message, SwiftProtobuf._Message
         if _storage._head != rhs_storage._head {return false}
         if _storage._controllers != rhs_storage._controllers {return false}
         if _storage._timestampNs != rhs_storage._timestampNs {return false}
+        if _storage._trackingSessionID != rhs_storage._trackingSessionID {return false}
+        if _storage._trackingMetadataVersion != rhs_storage._trackingMetadataVersion {return false}
         return true
       }
       if !storagesAreEqual {return false}

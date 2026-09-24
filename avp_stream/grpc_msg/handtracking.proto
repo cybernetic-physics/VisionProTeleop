@@ -47,6 +47,9 @@ message HandUpdate {
   Matrix4x4 Head = 3; 
   ControllerTracking controllers = 4;
   uint64 timestamp_ns = 5; // serialization time in headset monotonic clock
+  // Changes on AR session restart and head tracking loss/relocalization.
+  string tracking_session_id = 6;
+  uint32 tracking_metadata_version = 7; // 1: session identity and optical validity
 }
 
 // Independent controller inputs. An inactive input is not a held/released value.
